@@ -31,6 +31,7 @@
 #include <QStandardPaths>
 #include <QStatusBar>
 #include <QTabWidget>
+#include <QTabBar>
 #include <QTableWidget>
 #include <QTimer>
 #include <QTreeWidget>
@@ -58,14 +59,25 @@ QString categoryFor(const QString &name){
 QString shortTime(const QDateTime &time){
     return time.isValid()?time.toString("HH:mm:ss.zzz"):QStringLiteral("时间未知");
 }
+QString displayValue(const EngineeringField &f){
+    if(!f.status.startsWith("raw_")){
+        bool ok=false;const double number=f.value.toDouble(&ok);
+        if(ok&&std::isfinite(number))return QString::number(number,'g',8);
+    }
+    return f.value;
+}
+bool recognizedBusiness(const BusinessPacket &p){
+    return !p.packetName.isEmpty()&&p.identification!="by04_ccsds_header_only";
+}
 QString labelStatus(const QString &s){
-    if(s=="by04_observed_float32")return QStringLiteral("浮点原码对照 · 布局候选");
-    if(s=="raw_by04_conversion_unknown")return QStringLiteral("仅原码 · 换算及单位待确认");
+    if(s=="reference_formula")return QStringLiteral("参考换算");
+    if(s=="by04_observed_float32")return QStringLiteral("已解析");
+    if(s=="raw_by04_conversion_unknown")return QStringLiteral("原码");
     if(s=="table_formula"||s=="table_enum"||s=="table_string"||s=="table_raw_hex")
-        return QStringLiteral("字段表解析");
+        return QStringLiteral("已解析");
     if(s=="table_enum_unknown_value")return QStringLiteral("未知枚举值");
     if(s=="invalid_source_bit_position")return QStringLiteral("原始字段定义异常");
-    if(s=="raw_unsupported_formula"||s.startsWith("raw_"))return QStringLiteral("仅原始值");
+    if(s=="raw_unsupported_formula"||s.startsWith("raw_"))return QStringLiteral("原码");
     if(s=="candidate_unverified")return QStringLiteral("实验性候选");
     if(s=="protocol_header_only")return QStringLiteral("CCSDS 协议字段");
     if(s=="raw_unverified_business")return QStringLiteral("业务含义未定义");
@@ -106,7 +118,7 @@ QString MainWindow::utcLabel(const QDateTime &time)const{
                           QStringLiteral("接收时间未知");
 }
 QString MainWindow::eventTitle(const BusinessPacket &packet)const{
-    if(packet.identification=="by04_observed_layout_candidate")return packet.packetLabel;
+    if(packet.identification=="by04_kiss_envelope")return packet.packetLabel;
     if(packet.identification=="by04_ccsds_header_only")
         return packet.packetLabel;
     if(packet.identification=="by04_opaque_kiss")
@@ -157,24 +169,29 @@ void MainWindow::importSession(){
         return;
     }
     QString error;
-    const QString sat=satellite();
-    auto log=logPath_.isEmpty()?QVector<orbit::Frame>{}:
-        orbit::Protocol::fromLog(logPath_,sat,&error);
-    if(!error.isEmpty()){
-        QMessageBox::warning(this,QStringLiteral("日志读取失败"),error);return;
+    if(!openSession(logPath_,binPath_,satellite(),&error))
+        QMessageBox::warning(this,QStringLiteral("导入失败"),error);
+}
+bool MainWindow::openSession(const QString &logPath,const QString &binPath,const QString &sat,QString *failure){
+    QString error;
+    if((sat!="BY04"&&sat!="ASRTU-1") || (logPath.isEmpty()&&binPath.isEmpty())){
+        if(failure)*failure=QStringLiteral("请选择卫星和数据文件");return false;
     }
-    auto bin=binPath_.isEmpty()?QVector<orbit::Frame>{}:
-        orbit::Protocol::fromBin(binPath_,sat,&error);
-    if(!error.isEmpty()){
-        QMessageBox::warning(this,QStringLiteral("二进制读取失败"),error);return;
-    }
+    auto log=logPath.isEmpty()?QVector<orbit::Frame>{}:orbit::Protocol::fromLog(logPath,sat,&error);
+    if(!error.isEmpty()){if(failure)*failure=error;return false;}
+    auto bin=binPath.isEmpty()?QVector<orbit::Frame>{}:orbit::Protocol::fromBin(binPath,sat,&error);
+    if(!error.isEmpty()){if(failure)*failure=error;return false;}
+    logPath_=logPath;binPath_=binPath;
+    satelliteSelect_->setCurrentIndex(satelliteSelect_->findData(sat));
+    updatePaths();
     frames_=orbit::Protocol::fuse(log,bin,&frameStats_);
     if(hasCustomSchema_&&customSchema_.satellite()==sat)
         for(auto &f:frames_)customSchema_.apply(f);
     rebuildSession();
     if(!db_.save(sat+QStringLiteral(" · LOG/BIN 离线会话"),frames_,&error))
         statusBar()->showMessage(QStringLiteral("数据可回放，但未保存到 SQLite：")+error,12000);
-    else statusBar()->showMessage(QStringLiteral("会话导入完成，原始传输帧及来源已保留"),8500);
+    else statusBar()->showMessage(QStringLiteral("导入完成"),5000);
+    return true;
 }
 void MainWindow::loadHistory(){
     QString error;
@@ -248,14 +265,13 @@ void MainWindow::populateEvents(){
             QStringLiteral("本机记录时间；尚未确认日志时区\n%1").arg(basis)));
         eventTable_->setItem(i,1,item(title,
             QStringLiteral("应用数据包字节：%1\nCRC：未校验").arg(b.transport.bytes.size())));
-        const QString status=b.identification=="by04_observed_layout_candidate"?
-            QStringLiteral("实包布局候选 · 部分浮点已对照"):
+        const QString status=b.identification=="by04_kiss_envelope"?
+            QStringLiteral("已解析"):
             b.identification=="by04_ccsds_header_only"?
-            QStringLiteral("CCSDS 包头已解析 · 工程量待定义"):
+            QStringLiteral("包头"):
             (b.packetName.isEmpty()?QStringLiteral("类型未知"):
-                                    QStringLiteral("已匹配字段表"));
-        auto *quality=item(status+" · "+(b.transport.fecEvidence=="log_fec_reported"?
-                                         QStringLiteral("FEC 日志"):QStringLiteral("结构恢复")));
+                                    QStringLiteral("已解析"));
+        auto *quality=item(status,qualityLabel(b.transport.fecEvidence));
         quality->setForeground(b.packetName.isEmpty()?QColor("#73859a"):QColor("#216a9f"));
         eventTable_->setItem(i,2,quality);
         eventTable_->setItem(i,3,item(source));
@@ -267,7 +283,7 @@ void MainWindow::applyEventFilter(){
     const QString query=eventSearch_->text().trimmed();
     const bool recognized=recognizedOnly_->isChecked();
     for(int row=0;row<eventTable_->rowCount();++row){
-        const bool matchKind=!recognized || !business_[row].packetName.isEmpty();
+        const bool matchKind=!recognized || recognizedBusiness(business_[row]);
         bool matchText=query.isEmpty();
         for(int col=0;col<eventTable_->columnCount()&&!matchText;++col){
             auto *i=eventTable_->item(row,col);
@@ -319,15 +335,15 @@ void MainWindow::updateMetrics(){
     frameMetric_->setText(QString::number(frames_.size()));
     int good=0;
     for(const auto &p:business_)
-        if(!p.packetName.isEmpty())++good;
+        if(recognizedBusiness(p))++good;
     const bool by04=satellite()=="BY04";
-    recognizedOnly_->setText(by04?QStringLiteral("仅显示布局候选或包头"):
+    recognizedOnly_->setText(by04?QStringLiteral("仅显示已识别数据"):
                                   QStringLiteral("仅显示已识别数据"));
     auto label=[](QLabel *value){
         return value->parentWidget()->findChild<QLabel*>("subtitle");
     };
     if(auto *caption=label(recognizedMetric_))
-        caption->setText(by04?QStringLiteral("布局候选 / 包头"):
+        caption->setText(by04?QStringLiteral("已识别业务包"):
                              QStringLiteral("已识别业务包"));
     if(auto *caption=label(unknownMetric_))
         caption->setText(by04?QStringLiteral("未分类 KISS 业务包"):
@@ -337,23 +353,23 @@ void MainWindow::updateMetrics(){
     imageMetric_->setText(QString::number(images_.size()));
     transportMetric_->setText(QStringLiteral("%1 包").arg(packets_.size()));
     message_->setText(satellite()=="BY04"?
-        QStringLiteral("BY04 · KISS %1 包 · OBC-SF / BUV-S0 实包布局候选 · 未知公式保留原码 · SSDV %2 包")
+        QStringLiteral("BY04 · %1 包 · 图像 %2")
             .arg(packets_.size()).arg(images_.size()):
-        QStringLiteral("KISS 已重组：%1 · 应用 CRC 未校验 · 缺帧中断：%2")
+        QStringLiteral("%1 包 · 缺帧 %2")
             .arg(packets_.size()).arg(transportStats_.interruptedByCounterGap));
 }
 void MainWindow::updateOverview(int index){
     if(index<0||index>=business_.size()){
-        currentTitle_->setText(QStringLiteral("尚未载入可回放的业务数据"));
-        currentMeta_->setText(QStringLiteral("通过上方工具栏导入 LOG 与 BIN，然后开始回放"));
-        integrityLabel_->setText(QStringLiteral("星载 UTC：未知 · 应用 CRC：未校验"));
+        currentTitle_->setText(QStringLiteral("尚未导入数据"));
+        currentMeta_->setText(QStringLiteral("选择 LOG 或 BIN，然后导入"));
+        integrityLabel_->setText(QStringLiteral("离线会话"));
     }else{
         const auto &b=business_[index];
         currentTitle_->setText(eventTitle(b));
         currentMeta_->setText(QStringLiteral("记录时间：%1　　来源：%2　　虚拟信道：%3")
             .arg(utcLabel(b.transport.captureLocal),sourceLabel(b.transport.sources))
             .arg(b.transport.vcid));
-        integrityLabel_->setText(QStringLiteral("传输状态：%1　　应用 CRC：未校验　　星载 UTC：未知")
+        integrityLabel_->setText(QStringLiteral("%1 · CRC 未校验")
            .arg(qualityLabel(b.transport.fecEvidence)));
     }
     updateFieldCard(powerCard_,{"PDB","SAT"},index);
@@ -364,9 +380,10 @@ void MainWindow::updateOverview(int index){
 void MainWindow::updateFieldCard(QGroupBox *card,const QStringList &prefixes,int index){
     auto *content=card->findChild<QLabel*>("statusContent");
     if(!content)return;
-    const BusinessPacket *chosen=latestRecognized(index,prefixes);
+    const BusinessPacket *chosen=latestRecognized(index,satellite()=="BY04"?
+        (card==payloadCard_?QStringList{"BY04-BUV"}:QStringList{"BY04-OBC"}):prefixes);
     if(!chosen){
-        content->setText(QStringLiteral("暂无已识别的遥测参数<br><span style='color:#8190a3'>等待匹配分系统数据包</span>"));
+        content->setText(QStringLiteral("暂无数据"));
         return;
     }
     QString text=QStringLiteral("<span style='color:#68809b'>来源 %1 · 接收 %2</span><br>")
@@ -374,16 +391,24 @@ void MainWindow::updateFieldCard(QGroupBox *card,const QStringList &prefixes,int
              shortTime(chosen->transport.captureLocal).toHtmlEscaped());
     int shown=0;
     for(const auto &f:chosen->fields){
+        if(satellite()=="BY04"){
+            const QString group=categoryFor(f.nameCn);
+            if(card==powerCard_&&group!=QStringLiteral("电源与配电"))continue;
+            if(card==attitudeCard_&&!f.nameCn.startsWith(QStringLiteral("姿态四元数")))continue;
+            if(card==thermalCard_&&group!=QStringLiteral("温度与热控"))continue;
+            if(card==payloadCard_&&!f.nameCn.contains(QStringLiteral("接收信号"))&&
+               !f.nameCn.contains(QStringLiteral("接收频偏")))continue;
+        }
         if(f.value.isEmpty()||f.status.startsWith("raw_")||f.status=="invalid_source_bit_position")
             continue;
         if(f.nameCn.isEmpty())continue;
         text+=QStringLiteral("<div style='margin-top:5px'><b>%1</b>：%2 %3</div>")
-            .arg(f.nameCn.toHtmlEscaped(),f.value.toHtmlEscaped(),
-                 f.unit.toHtmlEscaped());
+            .arg(f.nameCn.toHtmlEscaped(),displayValue(f).toHtmlEscaped(),
+                f.unit=="1"?QString():f.unit.toHtmlEscaped());
         if(++shown>=4)break;
     }
     if(!shown)text+=QStringLiteral("字段存在，但暂未取得可显示的工程量");
-    text+=QStringLiteral("<br><span style='color:#8798aa'>应用 CRC 未校验</span>");
+
     content->setText(text);
 }
 void MainWindow::populateEngineering(int index){
@@ -411,14 +436,9 @@ void MainWindow::populateEngineering(int index){
             QStringLiteral("当前时段暂无符合公开 27 类定义的分系统业务包；原始 KISS 已保留于“原始数据”。"));
         return;
     }
-    engineeringSummary_->setText(chosen->identification=="by04_observed_layout_candidate"?
-        QStringLiteral("%1 · %2 项网页位地址 · 部分浮点有原码对照；数值包型、完整公式和单位未获正式定义 · CRC 未校验")
-            .arg(eventTitle(*chosen)).arg(chosen->fields.size()):
-        chosen->identification=="by04_ccsds_header_only"?
-        QStringLiteral("%1 · CCSDS 包头已解析 · %2 项协议字段 · BY04 工程遥测字段仍待确认")
-            .arg(eventTitle(*chosen)).arg(chosen->fields.size()):
-        QStringLiteral("%1 · %2 项参数 · 识别方式：%3 · 应用 CRC 未校验")
-            .arg(eventTitle(*chosen)).arg(chosen->fields.size()).arg(chosen->identification));
+    engineeringSummary_->setText(QStringLiteral("%1  /  %2 项参数")
+        .arg(eventTitle(*chosen)).arg(chosen->fields.size()));
+    engineeringSummary_->setToolTip(chosen->definitionEvidence);
     QHash<QString,QTreeWidgetItem*> groups;
     QSignalBlocker treeBlocked(fieldTree_);
     for(const auto &f:chosen->fields){
@@ -430,7 +450,7 @@ void MainWindow::populateEngineering(int index){
             groups.insert(group,root);
         }
         auto *field=new QTreeWidgetItem(root,{
-            f.nameCn.isEmpty()?f.code:f.nameCn,f.value,f.unit,labelStatus(f.status)});
+            f.nameCn.isEmpty()?f.code:f.nameCn,displayValue(f),f.unit=="1"?QString():f.unit,labelStatus(f.status)});
         field->setData(0,Qt::UserRole,f.code);
         field->setData(0,Qt::UserRole+1,chosen->packetName);
         field->setToolTip(0,f.code+"\n"+f.nameEn+"\n"+f.bits+"\n"+f.dataType+"\n"+f.definitionEvidence);
@@ -451,6 +471,7 @@ void MainWindow::populateEngineering(int index){
 }
 void MainWindow::plotEngineering(const QString &packet,const QString &code,int upTo){
     auto *chart=new QChart;
+    chart->legend()->hide();
     chart->setBackgroundVisible(false);
     if(!code.isEmpty()&&upTo>=0){
         auto *series=new QLineSeries;
@@ -479,24 +500,15 @@ void MainWindow::plotEngineering(const QString &packet,const QString &code,int u
     engineeringChart_->setChart(chart);
 }
 void MainWindow::updateAttitude(int index){
-    if(satellite()=="BY04"){
-        for(auto *q:quaternion_)if(q)q->setText(QStringLiteral("—"));
-        normLabel_->setText(QStringLiteral("—"));
-        attitudeWidget_->setQuaternion(QQuaternion(),false);
-        attitudeInfo_->setText(QStringLiteral(
-            "BY04 · 网页 OBC-SF 的姿态四元数已作为实包布局候选列于业务遥测。"
-            "正式分包映射、姿态参考系及分量约定仍未确认，三维姿态暂不可用。"));
-        auto *chart=new QChart;
-        chart->setTitle(QStringLiteral("BY04 姿态时序：等待专用工程遥测字段表"));
-        attitudeChart_->setChart(chart);
-        return;
-    }
-    const auto *last=latestRecognized(index,{"SAT-S3"});
+    const bool by04=satellite()=="BY04";
+    const QString packetName=by04?QStringLiteral("BY04-OBC-SF"):QStringLiteral("SAT-S3");
+    const QString quaternionName=by04?QStringLiteral("姿态四元数q%1"):QStringLiteral("解算四元数q%1");
+    const auto *last=latestRecognized(index,{packetName});
     bool has[4]{false,false,false,false};
     double q[4]{};
     if(last){
         for(const auto &f:last->fields)for(int j=0;j<4;j++)
-            if(f.nameCn==QStringLiteral("解算四元数q%1").arg(j)&&
+            if(f.nameCn==quaternionName.arg(j)&&
                f.status=="table_formula"){
                 bool ok=false;const double value=f.value.toDouble(&ok);
                 if(ok&&std::isfinite(value)){q[j]=value;has[j]=true;}
@@ -512,13 +524,10 @@ void MainWindow::updateAttitude(int index){
     normLabel_->setText(ready?QString::number(norm,'f',6):QStringLiteral("—"));
     attitudeWidget_->setQuaternion(
         QQuaternion(float(q[0]),float(q[1]),float(q[2]),float(q[3])),
-        ready&&norm>1e-9);
-    attitudeInfo_->setText(ready?
-        QStringLiteral("SAT-S3 四元数 · 记录时间：%1 · 数据来源：%2\n"
-          "数值按公开字段表换算；假设 q0 为标量仅作相对图形示意，参考系、天线安装矩阵及 CRC 均未核实")
-            .arg(shortTime(last->transport.captureLocal),
-                 qualityLabel(last->transport.fecEvidence)):
-        QStringLiteral("当前时段暂无 SAT-S3 完整四元数；不会从未知业务包推断卫星姿态"));
+        ready&&std::abs(norm-1.0)<0.05);
+    attitudeInfo_->setText(ready?QStringLiteral("%1 · %2")
+        .arg(packetName,shortTime(last->transport.captureLocal)):QStringLiteral("暂无姿态数据"));
+    attitudeInfo_->setToolTip(QStringLiteral("相对姿态示意，q0 为标量；参考坐标系和天线安装矩阵未定义"));
     auto *chart=new QChart;
     chart->setBackgroundVisible(false);
     QVector<QLineSeries*> series;
@@ -526,10 +535,10 @@ void MainWindow::updateAttitude(int index){
     QDateTime first;
     if(index>=0)for(int i=0;i<=index&&i<business_.size();++i){
         const auto &p=business_[i];
-        if(p.packetName!="SAT-S3")continue;
+        if(p.packetName!=packetName)continue;
         double values[4]{};bool found[4]{};
         for(const auto &f:p.fields)for(int j=0;j<4;j++)
-            if(f.nameCn==QStringLiteral("解算四元数q%1").arg(j)&&f.status=="table_formula"){
+            if(f.nameCn==quaternionName.arg(j)&&f.status=="table_formula"){
                 bool ok=false;const double val=f.value.toDouble(&ok);
                 if(ok&&std::isfinite(val)){values[j]=val;found[j]=true;}
             }
@@ -543,7 +552,7 @@ void MainWindow::updateAttitude(int index){
     for(auto *s:series){if(nonempty)chart->addSeries(s);else delete s;}
     if(nonempty){chart->createDefaultAxes();chart->legend()->setVisible(true);}
     chart->setTitle(nonempty?QStringLiteral("解算四元数时序（相对记录时间）"):
-        QStringLiteral("暂无已识别的 SAT-S3 时序数据"));
+        QStringLiteral("暂无姿态时序"));
     attitudeChart_->setChart(chart);
 }
 void MainWindow::updateRawPacket(int index){
@@ -616,6 +625,7 @@ void MainWindow::inspectFrame(int index){
 }
 void MainWindow::setDiagnosticsVisible(bool visible){
     if(pages_&&diagnosticTab_>=0)pages_->setTabVisible(diagnosticTab_,visible);
+    if(navigation_&&diagnosticTab_>=0)navigation_->setTabVisible(diagnosticTab_,visible);
 }
 void MainWindow::scanSsdv(){
     if(!imageApid_)return;
@@ -741,16 +751,10 @@ void MainWindow::exportEngineering(bool csv){
 }
 void MainWindow::exportQuaternions(bool experimental){
     if(frames_.isEmpty())return;
-    if(!experimental && satellite()=="BY04"){
-        QMessageBox::information(this,QStringLiteral("BY04 四元数"),
-            QStringLiteral("BY04 的姿态工程遥测位置和换算尚未确认，"
-                           "不能套用 ASRTU-1 的 SAT-S3 字段定义导出四元数。"));
-        return;
-    }
     const QString path=QFileDialog::getSaveFileName(this,
         experimental?QStringLiteral("实验性候选四元数（非正式姿态）"):
-                     QStringLiteral("SAT-S3 解算四元数"),
-        experimental?"candidate-quaternion.csv":"SAT-S3-quaternions.csv",
+                     QStringLiteral("四元数 CSV"),
+        experimental?"candidate-quaternion.csv":"quaternions.csv",
         QStringLiteral("CSV (*.csv)"));
     if(path.isEmpty())return;
     QString error;
@@ -758,7 +762,7 @@ void MainWindow::exportQuaternions(bool experimental){
         orbit::Protocol::exportAttitudeCsv(path,frames_,&error):
         orbit::BusinessCatalog::exportQuaternionCsv(path,business_,&error);
     if(!ok)QMessageBox::warning(this,QStringLiteral("导出失败"),error);
-    else statusBar()->showMessage(QStringLiteral("四元数已导出；应用 CRC / 参考坐标系未验证"),9000);
+    else statusBar()->showMessage(QStringLiteral("四元数已导出"),9000);
 }
 void MainWindow::exportKiss(){
     if(packets_.isEmpty())return;

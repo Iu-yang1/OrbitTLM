@@ -11,7 +11,7 @@ jobs:
       - name: Install Qt6 and SQLite
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build g++ qt6-base-dev qt6-charts-dev libqt6sql6-sqlite
+          sudo apt-get install -y ninja-build g++ qt6-base-dev qt6-charts-dev libqt6sql6-sqlite fonts-noto-cjk
       - name: Configure
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
       - name: Compile
@@ -22,7 +22,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OrbitTLM-UI-preview
-          path: build/OrbitTLM-UI-preview.png
+          path: |
+            build/OrbitTLM-UI-preview.png
+            build/OrbitTLM-BY04-*.png
           if-no-files-found: ignore
       - name: Archive Linux program
         uses: actions/upload-artifact@v4
@@ -53,6 +55,12 @@ jobs:
         run: cmake --build build --config Release --parallel 2
       - name: Test
         run: ctest --test-dir build -C Release --output-on-failure
+      - name: Upload Windows UI previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: OrbitTLM-Windows-UI-preview
+          path: build/Release/OrbitTLM-BY04-*.png
+          if-no-files-found: ignore
       - name: Package distributable Windows application
         shell: pwsh
         run: |

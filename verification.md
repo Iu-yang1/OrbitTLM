@@ -1,82 +1,15 @@
-# BY04 dashboard investigation and decoder validation
+# OrbitTLM 验证记录 · 2026-10-26
 
-## Evidence and scope
+- BY04：独立 OBC-SF 220 项、BUV-S0 99 项；main/subtype 从自身封装读取。
+- 52 条参考公式来自 HyacinthSat/asrtu-sndmdm-backend 的公开 ASRTU CSV，按 BY04 字段名、位宽和网页原码核对。源码版本：6c8eeba069560483debca688ea3bf77dd5491518。
+- 20 项浮点使用网页原码/数值对照；另补计数、时间及电压、电流、温度参考换算。参考模型在字段元数据中保留出处；仍未找到定义的量保持原码。
+- 修复 LOG/BIN 合并及 SQLite 重开时移动无时间戳帧的问题，KISS 状态按卫星、SCID、VC 隔离。
+- 分块覆盖跨 TM 帧、跨帧转义、序号回绕、重复块、缺块、独立信道，以及有界的 CCSDS 首/中/末段重组。BY04 按已知的一字节副类型处理每段头；原始块保留在 JSON。
+- 保留声明长度之外的 2/4 字节尾部，不将其当作已通过 CRC。
+- 真实 LOG/BIN 回放：28 帧、37 个 KISS 包（此前 35）、21 个业务包、10 条四元数；重组缺口及 EOF 残包均为 0。
+- Windows Release 编译；QtTest 协议 37 项、UI 5 项通过，CTest 3/3 通过。
+- UI 实包导入、导航、字段选择、失败导入保留原会话、1050 像素窗口验证；中文截图已检查。
+- CCSDS 分段业务以构造包验证；现有 BY04 实录未发现首/中/末段标志。没有 RF 或在轨硬件验证。
+- [分段标志标准](https://ccsds.org/Pubs/133x0b2e2.pdf) · [公开参考字头](https://github.com/HyacinthSat/asrtu-sndmdm-backend) · [布局参考](https://primer.style/product/components/page-layout/)
 
-Inspected main at `d2c91c6`. The attached previous chat was only a bounded preview;
-this session provided no `read_thread` or Work browser tool. Playwright MCP could
-not initialize because its Chrome path was missing. Local Playwright with the
-installed Microsoft Edge successfully loaded the requested page on 2026-10-25,
-received HTTP 200 and captured the page, JavaScript, and same-origin XHR JSONP.
-
-Observed public endpoints:
-
-- `/get_data?type=all_sys&sat=BY-04uv&callbackfunc=gettable`: 54 names.
-- `/get_data?type=table&sat=BY-04uv`: 3,074 populated field rows, including stale
-  August entries. A response timestamp is not an onboard timestamp.
-- `/get_data?type=system&sat=BY-04uv&code=OBC-SF&callbackfunc=data_callback`.
-- Same system endpoint with `code=BUV-S0`.
-- `/js/lines.js?v=20260826-1415` identifies `type=line`; bounded history requests
-  for the selected 2026-10-24 capture returned empty arrays. They did not verify
-  a time-synchronized match to the server's latest sample.
-
-These responses establish names/bit addresses and selected raw/value pairs, not
-an official numeric dispatch table or complete conversion formulas/units.
-The downloadable receiver tutorial supplies setup instructions, not a wire
-dictionary. The ASRTU backend's CSV definitions are for a different spacecraft.
-No BY04 CSV dictionary was obtained. The new decoder deliberately reports
-`by04_observed_layout_candidate`; full mission telemetry remains incomplete.
-
-## Real capture cross-check
-
-Read-only survey of the user's mixed recordings identified SCID `0x205` BY04
-frames and SCID `0x032` ASRTU frames. Most structurally plausible BY04 KISS packets
-were 198-byte `08F0/0F` on VC2 and 134-byte `08D2/00` on VC0. Their 191/127 field
-bytes fit dashboard OBC-SF/BUV-S0 addresses when based at KISS byte 7. The full
-CCSDS identity, declared length, subtype, VC, selected satellite and exact total
-length are required. This empirical association remains explicit in exports;
-APID is not assigned as a confirmed mission main type.
-
-The 319 retained field rows comprise 220 OBC-SF and 99 BUV-S0 addresses. Twenty
-server raw/value pairs equal big-endian IEEE binary32 exactly, including OBC
-attitude quaternion addresses 139/143/147/151. Sixteen OBC and four BUV fields use
-only this observed conversion. All other conversions and every unit remain
-unknown. Signedness, ADC scaling, enum completeness, spacecraft UTC epoch,
-application CRC, attitude reference frame and component convention are not
-inferred. Finite outliers are retained: an unverified packet can contain bad
-telemetry even when its envelope is structurally correct.
-
-Regression fixture `by04_business_capture.b64` preserves the complete 28-frame
-recording `20261024_222442_727/SSDV_received_frames223.bin`, including one
-non-BY04-SCID frame and damaged business fragments. Original byte count: 6,244.
-SHA-256: `afc7e91393f65b0cfb2032e318d294e9445404ac30e06b4778d9bcc35fc27c0a`.
-BIN-only regression recovers 10 OBC candidates and 11 BUV candidates; the first
-OBC q0 is `0.21687696874141693` at KISS offset 146. Original records were unchanged.
-
-## Validation
-
-- Windows MSVC 19.51 / Qt 6.8.3 Release: GUI, CLI, protocol and UI test targets built.
-- Missing Qt Charts was installed only into the task's temporary workspace using
-  aqt with archive hash validation; the existing Qt installation was unchanged.
-- CTest: protocol, CLI help, UI startup/tab smoke tests passed (3/3).
-- Added real capture field/offset/conversion checks, JSON/Chinese CSV evidence
-  checks, wrong satellite/VC/length/subtype rejection and NaN preservation.
-- LOG+BIN replay of the selected recording: 28 unique TM records, 35 recovered
-  KISS packets, 21 observed layout candidates, 204 converted float field values,
-  3,085 raw-only fields, 1 counter-gap interruption and 1 incomplete EOF packet.
-  Receiver logs report FEC for 20 records; this is not independent RF validation.
-- Existing real VC1 image regression still expects 10 CRC-valid and 1 damaged
-  DSLWP packets; images never enter the KISS telemetry parser.
-
-CI runs both Linux and Windows using the existing push workflow. Local Windows
-results do not constitute Linux CI results. Remote run status is reported in the
-delivery message after the branch has been pushed.
-
-## Completing the protocol
-
-`python scripts/collect_by04_dashboard.py evidence-directory` captures the six
-public resources, response headers, hashes and explicit access failures without
-evaluating JSONP. To complete the business decoder, obtain BY-04uv `system.csv`
-and per-packet definition CSVs from the operator, plus a corresponding raw packet
-and decoded record. Required columns: numeric packet IDs, field base, byte/bit
-offset, signed/float encoding, formula and unit. The current dashboard does not
-provide those complete definitions; no missing values were fabricated.
+Linux/Windows CI 状态随交付报告记录。

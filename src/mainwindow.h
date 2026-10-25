@@ -17,6 +17,7 @@ class QPlainTextEdit;
 class QPushButton;
 class QSlider;
 class QTabWidget;
+class QTabBar;
 class QTableWidget;
 class QTreeWidget;
 class QTreeWidgetItem;
@@ -30,6 +31,7 @@ class ImagePreview;
 class MainWindow final : public QMainWindow {
 public:
     explicit MainWindow(QWidget *parent=nullptr);
+    bool openSession(const QString &log,const QString &bin,const QString &satellite,QString *error=nullptr);
 private:
     void buildMenus();
     void buildToolbar();
@@ -109,6 +111,7 @@ private:
     QSlider *timeline_=nullptr;
     QTimer *timer_=nullptr;
     QTabWidget *pages_=nullptr;
+    QTabBar *navigation_=nullptr;
     int diagnosticTab_=-1;
     QGroupBox *powerCard_=nullptr,*attitudeCard_=nullptr,*thermalCard_=nullptr,*payloadCard_=nullptr;
     QLabel *quaternion_[4]{};

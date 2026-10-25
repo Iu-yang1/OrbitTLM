@@ -34,9 +34,11 @@
 #include <QStandardPaths>
 #include <QStatusBar>
 #include <QTabWidget>
+#include <QTabBar>
 #include <QTableWidget>
 #include <QTimer>
 #include <QToolBar>
+#include <QToolButton>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -127,64 +129,60 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent){
 }
 void MainWindow::applyStyles(){
     setStyleSheet(QStringLiteral(R"(
-        QMainWindow { background:#f3f6fb; color:#182940; }
-        QWidget { color:#1f3045; }
-        QMenuBar { background:#ffffff; padding:5px; border-bottom:1px solid #e0e7f0; }
-        QMenuBar::item:selected, QMenu::item:selected {background:#e7f1fd;}
-        QMenu { background:#ffffff; border:1px solid #dbe3ee; }
-        QToolBar { background:#ffffff; border:0; border-bottom:1px solid #e0e7f0;
-                   spacing:9px; padding:9px 12px; }
-        QToolButton, QPushButton {padding:7px 13px; border:1px solid #d6e0ec;
-                  border-radius:7px; background:#ffffff; font-weight:500;}
-        QToolButton:hover,QPushButton:hover {background:#edf5ff; border-color:#92bcf0;}
-        QPushButton#primaryButton {background:#256cb4; border-color:#256cb4; color:white;}
-        QPushButton#primaryButton:hover {background:#1f5b98;}
-        QComboBox,QSpinBox,QLineEdit {background:white; border:1px solid #d4deeb;
-                  border-radius:7px; padding:6px 9px; min-height:19px;}
-        QLineEdit:focus,QComboBox:focus {border:1px solid #3c87d0;}
-        QFrame#metricCard, QFrame#heroCard, QFrame#panel {
-                  background:#ffffff; border:1px solid #e2e8f1; border-radius:10px;}
-        QLabel#subtitle {color:#6d7f95; font-size:12px;}
-        QLabel#metricNumber {font-size:20px; font-weight:700; color:#1d3b5e;}
-        QLabel#currentHeading {font-size:21px; font-weight:700; color:#152d4c;}
-        QLabel#detailHeading {font-size:16px; font-weight:700; color:#193958;}
-        QLabel#note {color:#6b7f96; font-size:12px;}
-        QTabWidget::pane {background:white; border:1px solid #e1e8f1;
-                         border-radius:8px;}
-        QTabBar::tab {background:#edf2f8; border:0; border-radius:6px;
-                      margin-right:4px; padding:10px 14px; min-width:70px;}
-        QTabBar::tab:selected {background:#dcecff; color:#18558f; font-weight:700;}
-        QTabBar::tab:hover {background:#e3effb;}
-        QTableWidget,QTreeWidget,QPlainTextEdit {background:white;
-                     alternate-background-color:#f9fbff; border:1px solid #e1e8f1;
-                     border-radius:6px; gridline-color:#edf2f6;}
-        QHeaderView::section {background:#f5f8fc; border:none;
-                              border-bottom:1px solid #e1e8f1;
-                              color:#56718b; font-weight:600; padding:8px 5px;}
-        QTableWidget::item {padding:6px 4px; border-bottom:1px solid #eff2f7;}
-        QTableWidget::item:selected,QTreeWidget::item:selected {background:#e2f1ff;color:#183c64;}
-        QGroupBox#statusCard {background:#ffffff; border:1px solid #e1e8f1;
-                             border-radius:9px; margin-top:12px; font-weight:700;}
-        QGroupBox#statusCard::title {subcontrol-origin:margin; left:14px;
-                                    padding:0 6px;color:#245b8c;}
-        QLabel#statusContent {font-weight:400; color:#38516c; line-height:150%;}
-        QSplitter::handle {background:#edf1f7;}
-        QStatusBar {background:#ffffff; color:#61768d; border-top:1px solid #e0e7f0;}
-        QSlider::groove:horizontal {height:6px; background:#d9e4f0; border-radius:3px;}
-        QSlider::handle:horizontal {width:13px;background:#337fc3;
-                                  border:2px solid #ffffff; margin:-5px 0;border-radius:7px;}
+        QWidget {color:#1f2328; font-size:13px;}
+        QMainWindow {background:#ffffff;}
+        QMenuBar,QToolBar {background:#f6f8fa; border:0; border-bottom:1px solid #d1d9e0;}
+        QToolBar {spacing:8px; padding:12px 16px;}
+        QMenu {background:white; border:1px solid #d1d9e0; padding:4px;}
+        QMenu::item {padding:7px 18px;}
+        QMenu::item:selected {background:#eef1f4;}
+        QToolButton,QPushButton {background:#f6f8fa; border:1px solid #d1d9e0;
+            border-radius:6px; padding:6px 12px; font-weight:500;}
+        QToolButton:hover,QPushButton:hover {background:#eff2f5; border-color:#b7c0c8;}
+        QToolButton#primaryButton,QPushButton#primaryButton {background:#1f883d; color:white; border-color:#1f7a38;}
+        QToolButton#primaryButton:hover {background:#1a7f37;}
+        QComboBox,QSpinBox,QLineEdit {background:white; border:1px solid #d1d9e0;
+            border-radius:6px; padding:5px 8px; min-height:20px;}
+        QLineEdit:focus,QComboBox:focus {border:2px solid #0969da; padding:4px 7px;}
+        QFrame#metricCard,QFrame#heroCard,QFrame#panel {background:white; border:1px solid #d1d9e0; border-radius:6px;}
+        QLabel#subtitle,QLabel#note {color:#59636e; font-size:12px;}
+        QLabel#metricNumber {font-size:19px; font-weight:600;}
+        QLabel#currentHeading {font-size:20px; font-weight:600;}
+        QLabel#detailHeading {font-size:14px; font-weight:600;}
+        QLabel#brandTitle {font-size:19px; font-weight:600; padding-right:12px;}
+        QTabWidget::pane {background:white; border:0;}
+        QTabBar::tab {background:transparent; border:0; border-bottom:2px solid transparent;
+            margin-right:8px; padding:11px 14px; min-width:48px;}
+        QTabBar::tab:selected {border-bottom:2px solid #fd8c73; font-weight:600;}
+        QTabBar::tab:hover {background:#f6f8fa;}
+        QTabBar#workspaceNavigation {border-bottom:1px solid #d1d9e0;}
+        QTableWidget,QTreeWidget,QPlainTextEdit {background:white; border:1px solid #d1d9e0;
+            border-radius:6px; gridline-color:#d1d9e0; selection-background-color:#ddf4ff;}
+        QHeaderView::section {background:#f6f8fa; border:0; border-bottom:1px solid #d1d9e0;
+            color:#59636e; font-weight:500; padding:8px 6px;}
+        QTableWidget::item {padding:5px 4px; border-bottom:1px solid #e8ecf0;}
+        QTableWidget::item:selected,QTreeWidget::item:selected {background:#ddf4ff; color:#1f2328;}
+        QGroupBox#statusCard {background:white; border:1px solid #d1d9e0; border-radius:6px; margin-top:10px;}
+        QGroupBox#statusCard::title {subcontrol-origin:margin; left:12px; padding:0 5px; font-weight:600;}
+        QLabel#statusContent {font-weight:400;}
+        QSplitter::handle {background:#f6f8fa; width:10px; height:10px;}
+        QStatusBar {background:#f6f8fa; color:#59636e; border-top:1px solid #d1d9e0;}
+        QSlider::groove:horizontal {height:4px; background:#d1d9e0; border-radius:2px;}
+        QSlider::handle:horizontal {width:12px; background:#0969da; border-radius:6px; margin:-4px 0;}
     )"));
 }
 void MainWindow::buildToolbar(){
     auto *bar=addToolBar(QStringLiteral("遥测工作台"));
     bar->setMovable(false);
-    auto *log=bar->addAction(QStringLiteral("导入 LOG"));
+    auto *brand=new QLabel(QStringLiteral("OrbitTLM"));
+    brand->setObjectName("brandTitle");bar->addWidget(brand);
+    auto *log=bar->addAction(QStringLiteral("选择 LOG"));
     connect(log,&QAction::triggered,this,[this]{
         const QString p=QFileDialog::getOpenFileName(this,QStringLiteral("选择解码日志"),{},
                                                      QStringLiteral("日志 (*.log *.txt);;全部文件 (*)"));
         if(!p.isEmpty()){logPath_=p;updatePaths();}
     });
-    auto *bin=bar->addAction(QStringLiteral("导入 BIN"));
+    auto *bin=bar->addAction(QStringLiteral("选择 BIN"));
     connect(bin,&QAction::triggered,this,[this]{
         const QString p=QFileDialog::getOpenFileName(this,QStringLiteral("选择 223 字节帧文件"),{},
                                                      QStringLiteral("数据帧 (*.bin);;全部文件 (*)"));
@@ -196,13 +194,23 @@ void MainWindow::buildToolbar(){
     satelliteSelect_->addItem("ASRTU-1",QStringLiteral("ASRTU-1"));
     satelliteSelect_->addItem(QStringLiteral("八一04星 · BY04"),QStringLiteral("BY04"));
     bar->addWidget(satelliteSelect_);
-    auto *import=bar->addAction(QStringLiteral("开始导入"));
-    connect(import,&QAction::triggered,this,[this]{importSession();});
+    auto *import=new QToolButton;
+    import->setText(QStringLiteral("导入"));import->setObjectName("primaryButton");
+    import->setAccessibleName(QStringLiteral("导入会话"));bar->addWidget(import);
+    connect(import,&QToolButton::clicked,this,[this]{importSession();});
+    auto *spacer=new QWidget;spacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
+    bar->addWidget(spacer);
+    auto *history=bar->addAction(QStringLiteral("历史会话"));
+    connect(history,&QAction::triggered,this,[this]{loadHistory();});
     bar->addSeparator();
-    auto *exportCsv=bar->addAction(QStringLiteral("导出遥测 CSV"));
-    connect(exportCsv,&QAction::triggered,this,[this]{exportEngineering(true);});
-    auto *exportQ=bar->addAction(QStringLiteral("导出四元数"));
-    connect(exportQ,&QAction::triggered,this,[this]{exportQuaternions(false);});
+    auto *exportButton=new QToolButton;
+    exportButton->setText(QStringLiteral("导出"));exportButton->setPopupMode(QToolButton::InstantPopup);
+    auto *exports=new QMenu(exportButton);
+    exports->addAction(QStringLiteral("遥测 CSV"),this,[this]{exportEngineering(true);});
+    exports->addAction(QStringLiteral("遥测 JSON"),this,[this]{exportEngineering(false);});
+    exports->addAction(QStringLiteral("四元数 CSV"),this,[this]{exportQuaternions(false);});
+    exports->addAction(QStringLiteral("KISS 数据"),this,[this]{exportKiss();});
+    exportButton->setMenu(exports);bar->addWidget(exportButton);
     bar->addSeparator();
     auto *connectTcp=bar->addAction(QStringLiteral("连接 TCP"));
     connect(connectTcp,&QAction::triggered,this,[this]{
@@ -225,7 +233,7 @@ void MainWindow::buildMenus(){
     file->addAction(QStringLiteral("导出传输帧 JSON"),[this]{exportFrames(false);});
     file->addAction(QStringLiteral("导出业务遥测 CSV"),[this]{exportEngineering(true);});
     file->addAction(QStringLiteral("导出业务遥测 JSON"),[this]{exportEngineering(false);});
-    file->addAction(QStringLiteral("导出 SAT-S3 四元数"),[this]{exportQuaternions(false);});
+    file->addAction(QStringLiteral("导出四元数 CSV"),[this]{exportQuaternions(false);});
     file->addAction(QStringLiteral("导出实验性候选四元数"),[this]{exportQuaternions(true);});
     file->addAction(QStringLiteral("导出 KISS 应用包"),[this]{exportKiss();});
     auto *tools=menuBar()->addMenu(QStringLiteral("工具(&T)"));
@@ -251,14 +259,19 @@ void MainWindow::buildWorkspace(){
     auto *root=new QWidget;
     setCentralWidget(root);
     auto *main=new QVBoxLayout(root);
-    main->setContentsMargins(12,12,12,9);
-    main->setSpacing(9);
+    main->setContentsMargins(16,0,16,12);
+    main->setSpacing(12);
+    navigation_=new QTabBar;
+    navigation_->setObjectName("workspaceNavigation");
+    navigation_->setExpanding(false);navigation_->setDrawBase(false);
+    navigation_->setAccessibleName(QStringLiteral("工作区导航"));
+    main->addWidget(navigation_);
     auto *fileBar=new QFrame;
     fileBar->setObjectName("panel");
     auto *fileLayout=new QHBoxLayout(fileBar);
     fileLayout->setContentsMargins(15,9,15,9);
     sourceLabel_=new QLabel;
-    sourceLabel_->setWordWrap(true);
+    sourceLabel_->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Preferred);
     fileLayout->addWidget(sourceLabel_,1);
     message_=new QLabel(QStringLiteral("离线会话 · 应用层 CRC 未校验"));
     message_->setObjectName("note");
@@ -267,6 +280,7 @@ void MainWindow::buildWorkspace(){
     auto *split=new QSplitter(Qt::Horizontal);
     split->setChildrenCollapsible(false);
     auto *left=new QFrame;
+    left->setMinimumWidth(260);
     left->setObjectName("panel");
     auto *leftLayout=new QVBoxLayout(left);
     leftLayout->setContentsMargins(13,12,13,12);
@@ -274,7 +288,6 @@ void MainWindow::buildWorkspace(){
     auto *header=new QLabel(QStringLiteral("数据回放列表"));
     header->setObjectName("detailHeading");
     leftLayout->addWidget(header);
-    leftLayout->addWidget(subtitle(QStringLiteral("按记录时间浏览已重组的业务数据包")));
     eventSearch_=new QLineEdit;
     eventSearch_->setPlaceholderText(QStringLiteral("搜索时间、分系统或数据包"));
     leftLayout->addWidget(eventSearch_);
@@ -290,6 +303,7 @@ void MainWindow::buildWorkspace(){
     eventTable_->horizontalHeader()->setSectionResizeMode(2,QHeaderView::ResizeToContents);
     eventTable_->horizontalHeader()->setSectionResizeMode(3,QHeaderView::ResizeToContents);
     eventTable_->verticalHeader()->setDefaultSectionSize(43);
+    eventTable_->setColumnHidden(3,true);
     leftLayout->addWidget(eventTable_,1);
     connect(eventTable_,&QTableWidget::itemSelectionChanged,this,[this]{
         const int row=eventTable_->currentRow();
@@ -306,10 +320,15 @@ void MainWindow::buildWorkspace(){
     buildImages(pages_);
     buildRaw(pages_);
     buildDiagnostics(pages_);
+    for(int i=0;i<pages_->count();++i)navigation_->addTab(pages_->tabText(i));
+    pages_->tabBar()->hide();
+    connect(navigation_,&QTabBar::currentChanged,pages_,&QTabWidget::setCurrentIndex);
+    connect(pages_,&QTabWidget::currentChanged,navigation_,&QTabBar::setCurrentIndex);
     split->addWidget(pages_);
     split->setStretchFactor(0,0);
     split->setStretchFactor(1,1);
-    split->setSizes({465,995});
+    split->setObjectName("workspaceSplit");
+    split->setSizes({340,1100});
     main->addWidget(split,1);
     auto *transport=new QFrame;
     transport->setObjectName("panel");
@@ -342,7 +361,7 @@ void MainWindow::buildWorkspace(){
     connect(speedSelect_,&QComboBox::currentIndexChanged,this,[this](int i){
         const int intervals[5]={1000,500,250,125,63};if(timer_)timer_->setInterval(intervals[i]);
     });
-    statusBar()->showMessage(QStringLiteral("就绪 · 传输帧 FEC 证据与应用层 CRC 状态独立显示"));
+    statusBar()->showMessage(QStringLiteral("就绪"));
 }
 void MainWindow::buildOverview(QTabWidget *tabs){
     auto *page=new QWidget;auto *layout=new QVBoxLayout(page);
@@ -352,9 +371,9 @@ void MainWindow::buildOverview(QTabWidget *tabs){
     grid->addWidget(metricCard(QStringLiteral("时间范围"),timeMetric_),0,0);
     grid->addWidget(metricCard(QStringLiteral("去重传输帧"),frameMetric_),0,1);
     grid->addWidget(metricCard(QStringLiteral("已识别业务包"),recognizedMetric_),0,2);
-    grid->addWidget(metricCard(QStringLiteral("未识别业务包"),unknownMetric_),1,0);
-    grid->addWidget(metricCard(QStringLiteral("SSDV 候选分片"),imageMetric_),1,1);
-    grid->addWidget(metricCard(QStringLiteral("重组状态"),transportMetric_),1,2);
+    grid->addWidget(metricCard(QStringLiteral("未识别"),unknownMetric_),0,3);
+    grid->addWidget(metricCard(QStringLiteral("图像分片"),imageMetric_),0,4);
+    grid->addWidget(metricCard(QStringLiteral("KISS 包"),transportMetric_),0,5);
     layout->addWidget(metrics);
     auto *hero=new QFrame;hero->setObjectName("heroCard");
     auto *heroLayout=new QVBoxLayout(hero);
@@ -384,11 +403,15 @@ void MainWindow::buildOverview(QTabWidget *tabs){
 }
 void MainWindow::buildEngineering(QTabWidget *tabs){
     auto *page=new QWidget;auto *layout=new QVBoxLayout(page);
-    engineeringSummary_=subtitle(QStringLiteral("选择一条已识别的业务包，查看分系统字段与工程量"));
+    engineeringSummary_=subtitle(QStringLiteral("选择数据包查看参数"));
     layout->addWidget(engineeringSummary_);
     engineeringSearch_=new QLineEdit;
     engineeringSearch_->setPlaceholderText(QStringLiteral("筛选当前分包字段名或编号"));
-    layout->addWidget(engineeringSearch_);
+    auto *filters=new QHBoxLayout;
+    filters->addWidget(engineeringSearch_,1);
+    auto *details=new QCheckBox(QStringLiteral("字段详情"));
+    details->setObjectName("fieldDetailsToggle");filters->addWidget(details);
+    layout->addLayout(filters);
     auto *split=new QSplitter(Qt::Horizontal);
     engineeringTable_=new QTableWidget(0,3);
     engineeringTable_->setHorizontalHeaderLabels({QStringLiteral("时间"),QStringLiteral("分系统"),QStringLiteral("状态")});
@@ -396,24 +419,31 @@ void MainWindow::buildEngineering(QTabWidget *tabs){
     engineeringTable_->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Stretch);
     engineeringTable_->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);
     engineeringTable_->verticalHeader()->setDefaultSectionSize(34);
-    split->addWidget(engineeringTable_);
+    engineeringTable_->setParent(page);engineeringTable_->hide();
     auto *right=new QWidget;auto *rightLayout=new QVBoxLayout(right);
     rightLayout->setContentsMargins(5,2,5,2);
     fieldTree_=new QTreeWidget;
+    fieldTree_->setObjectName("engineeringFields");
     fieldTree_->setHeaderLabels({QStringLiteral("参数"),QStringLiteral("数值"),QStringLiteral("单位"),QStringLiteral("解析状态")});
     fieldTree_->setColumnWidth(0,245);
     fieldTree_->setColumnWidth(1,132);
+    fieldTree_->setColumnHidden(3,true);
     fieldTree_->setRootIsDecorated(true);
+    fieldTree_->header()->setSectionResizeMode(0,QHeaderView::Stretch);
+    fieldTree_->header()->setSectionResizeMode(1,QHeaderView::ResizeToContents);
+    fieldTree_->header()->setSectionResizeMode(2,QHeaderView::ResizeToContents);
     rightLayout->addWidget(fieldTree_,3);
     fieldDetail_=subtitle(QStringLiteral("选择参数查看原始 HEX、字段位置与换算公式"));
     fieldDetail_->setTextInteractionFlags(Qt::TextSelectableByMouse);
     rightLayout->addWidget(fieldDetail_);
+    fieldDetail_->hide();
+    connect(details,&QCheckBox::toggled,fieldDetail_,&QLabel::setVisible);
     engineeringChart_=new QChartView(new QChart);
     engineeringChart_->setRenderHint(QPainter::Antialiasing);
     engineeringChart_->setMinimumHeight(165);
     rightLayout->addWidget(engineeringChart_,2);
     split->addWidget(right);
-    split->setStretchFactor(1,1);split->setSizes({230,700});
+    split->setStretchFactor(0,1);
     layout->addWidget(split,1);
     connect(engineeringTable_,&QTableWidget::itemSelectionChanged,this,[this]{
         const auto *item=engineeringTable_->item(engineeringTable_->currentRow(),0);
@@ -431,10 +461,10 @@ void MainWindow::buildEngineering(QTabWidget *tabs){
         const QString packet=item->data(0,Qt::UserRole+1).toString();
         for(int i=0;i<business_.size();++i)if(i<=currentIndex_ && business_[i].packetName==packet)
             for(const auto &f:business_[i].fields)if(f.code==code){
-                fieldDetail_->setText(QStringLiteral("字段编号 %1  ·  位位置 %2\n原始值 %3  ·  换算公式 %4\n类型 %5  ·  依据 %6")
+                fieldDetail_->setText(QStringLiteral("%1  ·  位位置 %2\n原码 %3  ·  公式 %4")
                     .arg(f.code,f.bits,f.rawHex,
-                         f.formula.isEmpty()?QStringLiteral("未确认"):f.formula,
-                         f.dataType,f.definitionEvidence));
+                         f.formula.isEmpty()?QStringLiteral("—"):f.formula));
+                fieldDetail_->setToolTip(f.definitionEvidence);
             }
         plotEngineering(packet,code,currentIndex_);
     });
@@ -455,7 +485,7 @@ void MainWindow::buildEngineering(QTabWidget *tabs){
 }
 void MainWindow::buildAttitude(QTabWidget *tabs){
     auto *page=new QWidget;auto *layout=new QVBoxLayout(page);
-    attitudeInfo_=subtitle(QStringLiteral("仅展示 SAT-S3 已识别字段；四元数参考系与应用层 CRC 未验证"));
+    attitudeInfo_=subtitle(QStringLiteral("暂无姿态数据"));
     layout->addWidget(attitudeInfo_);
     auto *quats=new QWidget;auto *grid=new QGridLayout(quats);
     grid->setContentsMargins(0,0,0,0);
@@ -465,11 +495,8 @@ void MainWindow::buildAttitude(QTabWidget *tabs){
         quaternion_[i]=number;
     }
     QLabel *n=nullptr;
-    grid->addWidget(metricCard(QStringLiteral("四元数模长"),n),1,0,1,2);
+    grid->addWidget(metricCard(QStringLiteral("四元数模长"),n),1,0,1,4);
     normLabel_=n;
-    auto *explanation=new QLabel(QStringLiteral("SAT-S3：有符号 32 位整数 / 10000\n仅作数值与相对姿态展示，未定义绝对旋转参考系"));
-    explanation->setWordWrap(true);
-    grid->addWidget(explanation,1,2,1,2);
     layout->addWidget(quats);
     auto *views=new QSplitter(Qt::Horizontal);
     attitudeWidget_=new AttitudeWidget;

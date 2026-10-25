@@ -21,7 +21,7 @@ protected:
         if(!active_){
             p.setPen(QColor("#758397"));
             p.drawText(rect(),Qt::AlignCenter,
-                QStringLiteral("暂无可确认来源的姿态四元数\n等待 SAT-S3 业务遥测"));
+                QStringLiteral("暂无姿态数据"));
             return;
         }
         constexpr QVector3D corners[8]={{-1,-.65f,-.35f},{1,-.65f,-.35f},
@@ -41,7 +41,7 @@ protected:
         for(const auto &edge:edges)p.drawLine(projected[edge[0]],projected[edge[1]]);
         p.setPen(QColor("#718096"));
         p.drawText(rect().adjusted(10,0,-10,-8),Qt::AlignBottom|Qt::AlignHCenter,
-            QStringLiteral("仅作相对姿态示意 · 坐标系未核实"));
+            QStringLiteral("相对姿态"));
     }
 private:
     QQuaternion rotation_;
