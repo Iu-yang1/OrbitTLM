@@ -62,7 +62,7 @@ QByteArray Transport::frameData(const QByteArray &frame) {
 QVector<ApplicationPacket> Transport::reassemble(const QVector<Frame> &frames,TransportStats *stats){
     QVector<ApplicationPacket> out;
     TransportStats observed;
-    QHash<int,State> states;
+    QHash<QString,State> states;
     constexpr int MaximumKissPacket=65536;
     // The original recorder clock may be absent for BIN-only frames. A bounded
     // sequence window can be ordered by the TM master counter without inventing time.
@@ -73,7 +73,10 @@ QVector<ApplicationPacket> Transport::reassemble(const QVector<Frame> &frames,Tr
         ordered.push_back(&f);
         if(f.master>=0) counters.push_back(f.master);
     }
-    if(counters.size()>=2 && counters.size()<128){
+    const bool recordedOrder=std::any_of(frames.cbegin(),frames.cend(),[](const Frame &f){
+        return !f.sources.isEmpty();
+    });
+    if(!recordedOrder && counters.size()>=2 && counters.size()<128){
         std::sort(counters.begin(),counters.end());
         counters.erase(std::unique(counters.begin(),counters.end()),counters.end());
         int gap=-1,start=0;
@@ -102,7 +105,10 @@ QVector<ApplicationPacket> Transport::reassemble(const QVector<Frame> &frames,Tr
             // DSLWP SSDV image service, NOT KISS. VC0/VC2 may carry KISS.
             if(scid!=0x205 || frame.vcid==1)continue;
         }
-        State &s=states[frame.vcid];
+        const int scid=frame.bytes.size()==223?
+            ((quint8(frame.bytes[0])&0x3f)<<4)|(quint8(frame.bytes[1])>>4):-1;
+        const QString streamKey=frame.satellite+":"+QString::number(scid)+":"+QString::number(frame.vcid);
+        State &s=states[streamKey];
         // Only the per-VC counter can assess continuity; master count interleaves VCs.
         if(s.haveCount && frame.virtualCount>=0 && ((s.previousCount+1)&0xff)!=frame.virtualCount){
             if(s.started && !s.buffer.isEmpty() && !isPaddingOnly(s.buffer))
@@ -180,6 +186,73 @@ QVector<ApplicationPacket> Transport::reassemble(const QVector<Frame> &frames,Tr
            !it.value().oversized && !isPaddingOnly(it.value().buffer))
             ++observed.incompleteAtEof;
     if(stats)*stats=observed;
+    return out;
+}
+QVector<ApplicationPacket> Transport::assembleSegments(const QVector<ApplicationPacket> &packets,
+                                                      int secondaryHeaderOctets){
+    struct Group {ApplicationPacket first;QByteArray payload,lastBytes;int last=-1,order=0;};
+    QHash<QString,Group> pending;
+    QVector<ApplicationPacket> out;
+    auto flush=[&](const QString &key){
+        auto it=pending.find(key);if(it==pending.end())return;
+        it->first.assemblyStatus="incomplete_segments";
+        out.push_back(it->first);pending.erase(it);
+    };
+    int inputOrder=0;
+    for(const auto &p:packets){
+        const int order=inputOrder++;
+        const auto &b=p.bytes;
+        if(p.classification!="ccsds_space_packet_candidate" || b.size()<7 ||
+           (p.opaqueSuffixBytes!=0&&p.opaqueSuffixBytes!=2&&p.opaqueSuffixBytes!=4) ||
+           secondaryHeaderOctets<0 || p.data.size()<secondaryHeaderOctets){
+            out.push_back(p);continue;
+        }
+        const int id=(octet(b[0])<<8)|octet(b[1]);
+        if((id>>13)!=0 || (id&0x1000)!=0 ||
+           ((octet(b[4])<<8)|octet(b[5]))+7+p.opaqueSuffixBytes!=b.size() ||
+           p.data!=b.mid(6,b.size()-6-p.opaqueSuffixBytes)){
+            out.push_back(p);continue;
+        }
+        const int seq=(octet(b[2])<<8)|octet(b[3]);
+        const int flags=seq>>14,count=seq&0x3fff;
+        const QString key=p.satellite+":"+QString::number(p.vcid)+":"+QString::number(id);
+        if(flags==3){flush(key);out.push_back(p);continue;}
+        if(flags==1){
+            if(pending.contains(key)&&pending[key].lastBytes==b)continue;
+            flush(key);Group g;g.order=order;g.first=p;g.first.segments={b};
+            g.payload=p.data;g.last=count;g.lastBytes=b;pending.insert(key,g);continue;
+        }
+        if(!pending.contains(key)){
+            auto orphan=p;orphan.assemblyStatus="incomplete_segments";orphan.segments={b};
+            out.push_back(orphan);continue;
+        }
+        auto &g=pending[key];
+        if(g.last==count&&g.lastBytes==b)continue;
+        if(((g.last+1)&0x3fff)!=count ||
+           p.data.left(secondaryHeaderOctets)!=g.payload.left(secondaryHeaderOctets) ||
+           g.payload.size()+p.data.size()-secondaryHeaderOctets>65536 || g.first.segments.size()>=4096){
+            flush(key);auto orphan=p;orphan.assemblyStatus="incomplete_segments";
+            orphan.segments={b};out.push_back(orphan);continue;
+        }
+        g.payload+=p.data.mid(secondaryHeaderOctets);g.last=count;g.lastBytes=b;
+        g.first.segments.push_back(b);g.first.lastMaster=p.lastMaster;
+        g.first.contributingFrames+=p.contributingFrames;
+        for(const auto &source:p.sources)if(!g.first.sources.contains(source))g.first.sources<<source;
+        if(g.first.fecEvidence!=p.fecEvidence)g.first.fecEvidence="mixed_fec_unverified";
+        if(flags==2){
+            auto complete=g.first;
+            complete.data=g.payload;complete.assembledBytes=complete.bytes.left(6);
+            complete.assembledBytes[2]=char((quint8(complete.assembledBytes[2])&0x3f)|0xc0);
+            const int length=complete.data.size()-1;
+            complete.assembledBytes[4]=char(length>>8);complete.assembledBytes[5]=char(length&255);
+            complete.assembledBytes+=complete.data;
+            complete.assemblyStatus="reassembled_segments";
+            out.push_back(std::move(complete));pending.remove(key);
+        }
+    }
+    auto keys=pending.keys();
+    std::sort(keys.begin(),keys.end(),[&](const auto &a,const auto &b){return pending[a].order<pending[b].order;});
+    for(const auto &key:keys)flush(key);
     return out;
 }
 bool Transport::exportJson(const QString &path,const QVector<ApplicationPacket> &packets,QString *error){

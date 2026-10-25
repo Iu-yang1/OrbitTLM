@@ -2,6 +2,7 @@
 #include <QCryptographicHash>
 #include <QFile>
 #include <QHash>
+#include <QSet>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QRegularExpression>
@@ -176,12 +177,30 @@ QVector<Frame> Protocol::fuse(const QVector<Frame> &logs,const QVector<Frame> &b
             seen.insert(f.hash,result.size());result.push_back(f);
         }
     };
-    for(const Frame &f:logs)insert(f);
     for(const Frame &f:bins)insert(f);
-    std::stable_sort(result.begin(),result.end(),[](const Frame &a,const Frame &b){
-        if(a.captureLocal.isValid()!=b.captureLocal.isValid())return a.captureLocal.isValid();
-        return a.captureLocal<b.captureLocal;
-    });
+    for(const Frame &f:logs)insert(f);
+    // BIN order keeps untimed continuation frames between their timed neighbors.
+    if(!bins.isEmpty()){
+        QSet<QString> binHashes,emitted;
+        for(const auto &f:bins)binHashes.insert(f.hash);
+        QHash<QString,QVector<QString>> before;
+        QVector<QString> pending;
+        for(const auto &f:logs){
+            if(binHashes.contains(f.hash)){
+                before[f.hash]+=pending;pending.clear();
+            }else if(!pending.contains(f.hash))pending.push_back(f.hash);
+        }
+        QVector<Frame> ordered;ordered.reserve(result.size());
+        auto emitHash=[&](const QString &hash){
+            if(!emitted.contains(hash)){ordered.push_back(result[seen[hash]]);emitted.insert(hash);}
+        };
+        for(const auto &f:bins){
+            for(const auto &hash:before.value(f.hash))emitHash(hash);
+            emitHash(f.hash);
+        }
+        for(const auto &hash:pending)emitHash(hash);
+        result=std::move(ordered);
+    }
     s.unique=result.size();
     for(const Frame &f:result){
         if(!f.complete)++s.invalid;
@@ -332,7 +351,7 @@ QVector<Frame> Database::load(qint64 sessionId,QString *error) const {
     QSqlQuery q(db_);
     q.prepare("SELECT id,hash,satellite,capture_local,time_basis,quality,diagnostic,"
               "master,virtual_count,vcid,apid,sequence,sources,raw,payload FROM frames "
-              "WHERE session_id=? ORDER BY CASE WHEN capture_local IS NULL THEN 1 ELSE 0 END, capture_local, id");
+              "WHERE session_id=? ORDER BY id");
     q.addBindValue(sessionId);
     if(!q.exec()){if(error)*error=q.lastError().text();return frames;}
     QSqlQuery sample(db_);

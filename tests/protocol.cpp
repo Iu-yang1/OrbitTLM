@@ -7,6 +7,8 @@
 #include <QCoreApplication>
 #include <QtTest/QtTest>
 #include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
 #include <QTemporaryDir>
 #include <QtEndian>
 #include <bit>
@@ -524,20 +526,18 @@ private slots:
         const auto business=By04Decoder::decodeAll(packets);
         int obc=0,buv=0,converted=0;
         for(const auto &p:business){
-            if(p.identification!="by04_observed_layout_candidate")continue;
-            QCOMPARE(p.mainType,-1); // empirical APID mapping is not an official main type
+            if(p.identification!="by04_kiss_envelope")continue;
+            QCOMPARE(p.mainType,p.packetName=="BY04-OBC-SF"?0xf0:0xd2);
             QCOMPARE(p.fieldBaseKissOctet,7);
             QCOMPARE(p.transport.integrity,QString("not_crc_verified"));
             if(p.packetName=="BY04-OBC-SF"){++obc;QCOMPARE(p.fields.size(),220);}
             if(p.packetName=="BY04-BUV-S0"){++buv;QCOMPARE(p.fields.size(),99);}
             for(const auto &f:p.fields){
-                QVERIFY(f.unit.isEmpty());
-                if(f.status=="by04_observed_float32")++converted;
-                else {QVERIFY(f.formula.isEmpty());QCOMPARE(f.value,f.rawHex);}
-                // Do not turn this voltage ADC word into assumed V or mV.
+                if(f.dataType=="ieee754_binary32_be_observed")++converted;
                 if(f.code=="OBC-CF0044.7.16"){
-                    QCOMPARE(f.status,QString("raw_by04_conversion_unknown"));
-                    QVERIFY(f.dataType.contains("unconfirmed"));
+                    QCOMPARE(f.status,QString("reference_formula"));
+                    QCOMPARE(f.unit,QString("mV"));
+                    QCOMPARE(f.value,f.rawNumber);
                 }
             }
         }
@@ -557,19 +557,24 @@ private slots:
         QVERIFY(BusinessCatalog::exportJson(temp.filePath("by04.json"),{*it},&error));
         QFile json(temp.filePath("by04.json"));QVERIFY(json.open(QIODevice::ReadOnly));
         const auto saved=json.readAll();
-        QVERIFY(saved.contains("by04_observed_layout_candidate"));
+        QVERIFY(saved.contains("by04_kiss_envelope"));
         QVERIFY(saved.contains("ieee754_binary32_be_observed"));
         QVERIFY(saved.contains("field_base_kiss_octet"));
         QVERIFY(BusinessCatalog::exportCsv(temp.filePath("by04.csv"),{*it},&error));
         QFile csv(temp.filePath("by04.csv"));QVERIFY(csv.open(QIODevice::ReadOnly));
         const auto rows=csv.readAll();
         QVERIFY(rows.contains(QStringLiteral("姿态四元数q0").toUtf8()));
-        QVERIFY(rows.contains("by04_observed_float32"));
+        QVERIFY(rows.contains("reference_formula"));
     }
     void by04ObservedLayoutRejectsWrongEnvelopeAndNonfinite(){
         ApplicationPacket p;p.satellite="BY04";p.vcid=2;
         p.bytes=QByteArray::fromHex("08f0c00100bf0f")+QByteArray(191,0);
-        QCOMPARE(By04Decoder::decode(p).identification,QString("by04_observed_layout_candidate"));
+        QCOMPARE(By04Decoder::decode(p).identification,QString("by04_kiss_envelope"));
+        for(int suffix:{2,4}){
+            auto trailer=p;trailer.bytes+=QByteArray(suffix,char(0x55));
+            QCOMPARE(By04Decoder::decode(trailer).fields.size(),220);
+            QCOMPARE(By04Decoder::decode(trailer).transport.integrity,QString("not_crc_verified"));
+        }
         p.satellite="ASRTU-1";
         QVERIFY(By04Decoder::decode(p).fields.isEmpty());
         p.satellite="BY04";p.vcid=1;
@@ -581,7 +586,7 @@ private slots:
         p.bytes[6]=char(15);p.bytes.replace(146,4,QByteArray::fromHex("7fc00000"));
         const auto decoded=By04Decoder::decode(p);
         for(const auto &f:decoded.fields)if(f.code=="OBC-CF0139.7.32"){
-            QCOMPARE(f.status,QString("raw_by04_nonfinite_float"));
+            QCOMPARE(f.status,QString("raw_nonfinite_float"));
             QCOMPARE(f.value,QString("7FC00000"));
         }
     }
@@ -590,6 +595,100 @@ private slots:
         QVERIFY(f.complete);
         QVERIFY(f.fields.size()>=4);
         for(const auto &x:f.fields)QVERIFY(!x.name.startsWith("candidate.quaternion"));
+    }
+    void fragmentedBy04SurvivesPartialLogAndDatabaseReplay(){
+        QByteArray packet=QByteArray::fromHex("08f0c12300bf0f")+QByteArray(191,char(0xc0));
+        QByteArray stream(216,char(0xaa));stream.append(char(0xc0));
+        for(char c:packet){
+            if(quint8(c)==0xc0)stream+=QByteArray::fromHex("dbdc");
+            else if(quint8(c)==0xdb)stream+=QByteArray::fromHex("dbdd");
+            else stream.append(c);
+        }
+        stream.append(char(0xc0));
+        QVector<Frame> bins;
+        for(int offset=0;offset<stream.size();offset+=218){
+            QByteArray raw=QByteArray::fromHex("2054000000");
+            raw[2]=char((254+bins.size())&255);raw[3]=raw[2];
+            raw+=stream.mid(offset,218);raw+=QByteArray(223-raw.size(),char(0xaa));
+            auto f=Protocol::parse(raw,"BY04");f.sources<<"bin:block:"+QString::number(bins.size());
+            bins.push_back(f);
+        }
+        QCOMPARE(bins.size(),3);
+        auto first=bins[0],last=bins[2];
+        first.captureLocal=QDateTime::fromString("2026-10-25T23:00:00",Qt::ISODate);
+        last.captureLocal=first.captureLocal.addSecs(2);
+        first.quality=last.quality="log_fec_reported";
+        const auto merged=Protocol::fuse({first,last},bins);
+        QCOMPARE(merged[1].bytes,bins[1].bytes);
+        const auto packets=Transport::reassemble(merged);
+        QCOMPARE(packets.size(),1);QCOMPARE(packets[0].bytes,packet);
+        QCOMPARE(packets[0].contributingFrames,3);
+        QCOMPARE(By04Decoder::decode(packets[0]).fields.size(),220);
+        QTemporaryDir temp;Database db;QString error;
+        QVERIFY(db.open(temp.filePath("replay.sqlite"),&error));
+        QVERIFY(db.save("split",merged,&error));
+        const auto restored=db.load(db.sessions()[0].first,&error);
+        QCOMPARE(Transport::reassemble(restored)[0].bytes,packet);
+        auto missing=merged;missing.removeAt(1);
+        QVERIFY(Transport::reassemble(missing).isEmpty());
+    }
+    void spacecraftStreamsNeverShareContinuationState(){
+        QByteArray a(223,char(0x31)),b(223,char(0x42));
+        a.replace(0,5,QByteArray::fromHex("0324010100"));a[5]=char(0xc0);
+        b.replace(0,5,QByteArray::fromHex("2054020200"));b[222]=char(0xc0);
+        QVERIFY(Transport::reassemble({Protocol::parse(a,"ASRTU-1"),
+                                       Protocol::parse(b,"ASRTU-1")}).isEmpty());
+    }
+    void by04SegmentedSpacePacketsKeepOriginalBlocks(){
+        auto block=[](int flag,int seq,const QByteArray &body){
+            ApplicationPacket p;p.satellite="BY04";p.vcid=2;p.apid=0xf0;
+            p.classification="ccsds_space_packet_candidate";p.opaqueSuffixBytes=0;
+            p.bytes=QByteArray::fromHex("08f000000000");p.data=QByteArray(1,char(15))+body;
+            p.bytes[2]=char((flag<<6)|(seq>>8));p.bytes[3]=char(seq);
+            p.bytes[4]=char((p.data.size()-1)>>8);p.bytes[5]=char(p.data.size()-1);
+            p.bytes+=p.data;p.sequence=seq;return p;
+        };
+        const auto a=block(1,16382,QByteArray(60,char(1)));
+        const auto b=block(0,16383,QByteArray(70,char(2)));
+        const auto c=block(2,0,QByteArray(61,char(3)));
+        const auto result=By04Decoder::decodeAll({a,b,b,c});
+        QCOMPARE(result.size(),1);QCOMPARE(result[0].fields.size(),220);
+        QCOMPARE(result[0].transport.bytes,a.bytes);
+        QCOMPARE(result[0].transport.segments.size(),3);
+        QCOMPARE(result[0].transport.assembledBytes.size(),198);
+        QCOMPARE(result[0].transport.assemblyStatus,QString("reassembled_segments"));
+        QCOMPARE(BusinessCatalog::toJson(result[0])["raw_segments_hex"].toArray().size(),3);
+        auto crcA=a,crcB=b,crcC=c;
+        for(auto *p:{&crcA,&crcB,&crcC}){p->bytes+=QByteArray::fromHex("1234");p->opaqueSuffixBytes=2;}
+        const auto trailers=By04Decoder::decodeAll({crcA,crcB,crcC});
+        QCOMPARE(trailers.size(),1);QCOMPARE(trailers[0].fields.size(),220);
+        QCOMPARE(trailers[0].transport.segments[0],crcA.bytes);
+        for(const auto &p:By04Decoder::decodeAll({a,c}))QVERIFY(p.fields.isEmpty());
+        auto wrong=b;wrong.vcid=0;
+        for(const auto &p:By04Decoder::decodeAll({a,wrong,c}))QVERIFY(p.fields.isEmpty());
+    }
+    void by04ReferenceFormulaSamples(){
+        int checked=0;
+        for(const auto &name:{"OBC-SF","BUV-S0"}){
+            QFile file(QString(":/by04/%1.json").arg(name));QVERIFY(file.open(QIODevice::ReadOnly));
+            const auto kind=QJsonDocument::fromJson(file.readAll()).object();
+            for(const auto &v:kind["fields"].toArray()){
+                const auto d=v.toObject();const auto bits=d["bits"].toString().split('.');
+                const int offset=bits[0].toInt(),msb=bits[1].toInt(),width=bits[2].toInt();
+                QByteArray payload(191,0);const qint64 signedRaw=d["evidence"].toObject()["x_text"].toString().toLongLong();
+                const quint64 raw=quint64(signedRaw);
+                for(int i=0;i<width;++i){const int bit=offset*8+7-msb+i;
+                    if((raw>>(width-i-1))&1)payload[bit/8]=char(quint8(payload[bit/8])|(1u<<(7-bit%8)));
+                }
+                const auto f=BusinessCatalog::decodeField(d,payload);
+                if(f.status=="table_formula"||f.status=="reference_formula"){
+                    const double expected=d["evidence"].toObject()["f_double"].toDouble();
+                    QVERIFY2(qAbs(f.value.toDouble()-expected)<1e-7*std::max(1.0,qAbs(expected)),qPrintable(f.code));
+                    ++checked;
+                }
+            }
+        }
+        QVERIFY(checked>=100);
     }
 };
 QTEST_GUILESS_MAIN(ProtocolTest)

@@ -32,6 +32,9 @@ struct ApplicationPacket {
     int sequence = -1;
     int opaqueSuffixBytes = -1; // bytes after optional inner packet length (CRC unverified)
     int contributingFrames = 0;
+    QByteArray assembledBytes;
+    QVector<QByteArray> segments;
+    QString assemblyStatus;
 };
 class Transport {
 public:
@@ -41,6 +44,9 @@ public:
     static QVector<ApplicationPacket> reassemble(const QVector<Frame> &frames,
                                                 TransportStats *stats = nullptr);
     static QByteArray frameData(const QByteArray &informationFrame);
+    // secondaryHeaderOctets is mission-defined, never inferred from CCSDS flags.
+    static QVector<ApplicationPacket> assembleSegments(const QVector<ApplicationPacket> &packets,
+                                                       int secondaryHeaderOctets=0);
     static bool exportJson(const QString &path,const QVector<ApplicationPacket> &packets,
                            QString *error=nullptr);
 };

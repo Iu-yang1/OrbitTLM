@@ -139,6 +139,7 @@ Result convert(const QString &formula,const Raw &r,int length){
         if(length==32)value=double(std::bit_cast<float>(quint32(r.bits)));
         else if(length==64)value=std::bit_cast<double>(r.bits);
         else return {r.hex,unit,"raw_invalid_float_width"};
+        if(!std::isfinite(value))return {r.hex,unit,"raw_nonfinite_float"};
     }
     double result=0;
     if(!Arithmetic(expression,value).calculate(result))
@@ -152,6 +153,26 @@ QJsonObject fieldJson(const EngineeringField &f){
         {"unit",f.unit},{"status",f.status},{"data_type",f.dataType},
         {"definition_evidence",f.definitionEvidence}};
 }
+}
+EngineeringField BusinessCatalog::decodeField(const QJsonObject &d,const QByteArray &payload){
+    EngineeringField f;
+    f.code=d.value("id").toString();f.bits=d.value("bits").toString();
+    f.nameCn=d.value("name_cn").toString();f.nameEn=d.value("name_en").toString();
+    f.formula=d.value("formula").toString();f.dataType=d.value("data_type").toString();
+    f.definitionEvidence=d.value("formula_source").toString();
+    const auto address=f.bits.split('.');Raw r;
+    bool octetOk=false,bitOk=false,widthOk=false;
+    const int octet=address.value(0).toInt(&octetOk),bit=address.value(1).toInt(&bitOk),width=address.value(2).toInt(&widthOk);
+    if(address.size()!=3 || !octetOk || !bitOk || !widthOk || !readBits(payload,octet,bit,width,r)){
+        f.status="truncated_field";return f;
+    }
+    const auto result=convert(f.formula,r,width);
+    f.rawHex=r.hex;f.rawNumber=r.hasNumber?QString::number(r.bits):QString();
+    f.value=result.value;f.unit=result.unit;f.status=result.status;
+    if(f.dataType=="raw_bits"&&!f.status.startsWith("raw_"))f.status="raw_bits";
+    if((f.dataType=="sample_checked_linear"||f.dataType=="adapted_unit_reference")&&f.status=="table_formula")
+        f.status="reference_formula";
+    return f;
 }
 bool BusinessCatalog::loadDirectory(const QString &directory,QString *error){
     QDir dir(directory);
@@ -292,7 +313,8 @@ QVector<BusinessPacket> BusinessCatalog::decodeAll(const QVector<ApplicationPack
     return decoded;
 }
 QJsonObject BusinessCatalog::toJson(const BusinessPacket &packet){
-    QJsonArray fields,sources;
+    QJsonArray fields,sources,segments;
+    for(const auto &b:packet.transport.segments)segments.append(QString::fromLatin1(b.toHex()));
     for(const auto &f:packet.fields)fields.append(fieldJson(f));
     for(const auto &s:packet.transport.sources)sources.append(s);
     return {
@@ -303,6 +325,10 @@ QJsonObject BusinessCatalog::toJson(const BusinessPacket &packet){
         {"identification",packet.identification},
         {"definition_evidence",packet.definitionEvidence},
         {"field_base_kiss_octet",packet.fieldBaseKissOctet},
+        {"field_buffer",packet.transport.assembledBytes.isEmpty()?"raw_kiss_hex":"assembled_packet_hex"},
+        {"assembly_status",packet.transport.assemblyStatus},
+        {"raw_segments_hex",segments},
+        {"assembled_packet_hex",QString::fromLatin1(packet.transport.assembledBytes.toHex())},
         {"skipped_fields",packet.skippedFields},{"fields",fields},
         {"vcid",packet.transport.vcid},{"fec_evidence",packet.transport.fecEvidence},
         {"integrity",packet.transport.integrity},{"sources",sources},
@@ -365,11 +391,12 @@ bool BusinessCatalog::exportQuaternionCsv(const QString &path,const QVector<Busi
     out<<"capture_local,time_basis,spacecraft_utc,packet,identification,q0,q1,q2,q3,norm,"
           "fec_evidence,integrity,status\n";
     for(const auto &p:packets){
-        if(p.packetName!="SAT-S3")continue;
+        const bool by04=p.packetName=="BY04-OBC-SF";
+        if(p.packetName!="SAT-S3"&&!by04)continue;
         QString values[4];bool found[4]{};
         for(const auto &f:p.fields)
             for(int i=0;i<4;++i)
-                if(f.nameCn==QString("解算四元数q%1").arg(i)&&f.status=="table_formula"){
+                if(f.nameCn==QString(by04?"姿态四元数q%1":"解算四元数q%1").arg(i)&&f.status=="table_formula"){
                     values[i]=f.value;found[i]=true;
                 }
         if(!std::all_of(std::begin(found),std::end(found),[](bool a){return a;}))continue;

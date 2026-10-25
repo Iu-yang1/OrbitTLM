@@ -26,7 +26,7 @@ int main(int argc,char **argv){
         QCommandLineOption("telemetry-csv","Write business packet fields and engineering units to CSV","file"),
         QCommandLineOption("by04-ssdv-bin","Save native 218-byte BY04 VC1 DSLWP SSDV image packets","file"),
         QCommandLineOption("csv","Write full ordered CSV","file"),
-        QCommandLineOption("quaternion-csv","Write SAT-S3 official-schema calculated q0..q3; CRC unverified","file"),
+        QCommandLineOption("quaternion-csv","Write ASRTU SAT-S3 or BY04 OBC-SF q0..q3","file"),
         QCommandLineOption("candidate-quaternion-csv","Write experimental legacy frame candidate quaternions","file"),
         QCommandLineOption("sqlite","Persist one session to SQLite","file")
     });
@@ -86,16 +86,17 @@ int main(int argc,char **argv){
     }else if(sat=="BY04"){
         business=By04Decoder::decodeAll(packets);
         for(const auto &item:business){
-            if(item.identification=="by04_observed_layout_candidate")++bs.recognized;
+            if(item.identification=="by04_kiss_envelope")++bs.recognized;
             else ++bs.unknown;
             for(const auto &f:item.fields){
-                if(f.status=="by04_observed_float32")++bs.decodedFields;
-                else if(f.status.startsWith("raw_by04_"))++bs.unsupportedFields;
+                if(f.status.startsWith("table_")||f.status=="reference_formula")++bs.decodedFields;
+                else if(f.status.startsWith("raw_"))++bs.unsupportedFields;
             }
         }
         if(args.isSet("quaternion-csv")){
-            err<<"BY04 does not reuse SAT-S3 quaternion engineering fields; no verified BY04 mission schema available\n";
-            return 8;
+            if(!BusinessCatalog::exportQuaternionCsv(args.value("quaternion-csv"),business,&reason)){
+                err<<"BY04 quaternion CSV: "<<reason<<"\n";return 8;
+            }
         }
         if(args.isSet("telemetry-json") &&
            !BusinessCatalog::exportJson(args.value("telemetry-json"),business,&reason)){
@@ -143,7 +144,7 @@ int main(int argc,char **argv){
         {"engineering_fields_out_of_range",bs.truncatedFields},
         {"application_interrupted_by_gap",packetStats.interruptedByCounterGap},
         {"application_incomplete_at_eof",packetStats.incompleteAtEof},
-        {"by04_layout_status",sat=="BY04"?"observed_candidates_not_official_wire_dictionary":"not_applicable"},
+        {"by04_layout_status",sat=="BY04"?"by04_reference_catalog":"not_applicable"},
         {"note","223 bytes = 5-byte TM header + 218-byte data region; BY04 VC1 is native SSDV, VC0/2 use KISS; application CRC not verified"}
     };
     out<<QString::fromUtf8(QJsonDocument(result).toJson(QJsonDocument::Indented));
