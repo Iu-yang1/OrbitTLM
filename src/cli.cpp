@@ -86,9 +86,12 @@ int main(int argc,char **argv){
     }else if(sat=="BY04"){
         business=By04Decoder::decodeAll(packets);
         for(const auto &item:business){
-            if(item.identification=="by04_ccsds_header_only")++bs.recognized;
+            if(item.identification=="by04_observed_layout_candidate")++bs.recognized;
             else ++bs.unknown;
-            bs.decodedFields+=item.fields.size();
+            for(const auto &f:item.fields){
+                if(f.status=="by04_observed_float32")++bs.decodedFields;
+                else if(f.status.startsWith("raw_by04_"))++bs.unsupportedFields;
+            }
         }
         if(args.isSet("quaternion-csv")){
             err<<"BY04 does not reuse SAT-S3 quaternion engineering fields; no verified BY04 mission schema available\n";
@@ -96,11 +99,11 @@ int main(int argc,char **argv){
         }
         if(args.isSet("telemetry-json") &&
            !BusinessCatalog::exportJson(args.value("telemetry-json"),business,&reason)){
-            err<<"BY04 header JSON: "<<reason<<"\n";return 8;
+            err<<"BY04 telemetry JSON: "<<reason<<"\n";return 8;
         }
         if(args.isSet("telemetry-csv") &&
            !BusinessCatalog::exportCsv(args.value("telemetry-csv"),business,&reason)){
-            err<<"BY04 header CSV: "<<reason<<"\n";return 8;
+            err<<"BY04 telemetry CSV: "<<reason<<"\n";return 8;
         }
         if(args.isSet("by04-ssdv-bin")){
             const auto imagePackets=By04Decoder::images(frames);
@@ -140,7 +143,8 @@ int main(int argc,char **argv){
         {"engineering_fields_out_of_range",bs.truncatedFields},
         {"application_interrupted_by_gap",packetStats.interruptedByCounterGap},
         {"application_incomplete_at_eof",packetStats.incompleteAtEof},
-        {"note","223 bytes = 5-byte TM header + 218-byte KISS transport region; application CRC not verified, packet recovery is structural only"}
+        {"by04_layout_status",sat=="BY04"?"observed_candidates_not_official_wire_dictionary":"not_applicable"},
+        {"note","223 bytes = 5-byte TM header + 218-byte data region; BY04 VC1 is native SSDV, VC0/2 use KISS; application CRC not verified"}
     };
     out<<QString::fromUtf8(QJsonDocument(result).toJson(QJsonDocument::Indented));
     return 0;

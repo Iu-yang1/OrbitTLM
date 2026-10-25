@@ -59,6 +59,8 @@ QString shortTime(const QDateTime &time){
     return time.isValid()?time.toString("HH:mm:ss.zzz"):QStringLiteral("时间未知");
 }
 QString labelStatus(const QString &s){
+    if(s=="by04_observed_float32")return QStringLiteral("浮点原码对照 · 布局候选");
+    if(s=="raw_by04_conversion_unknown")return QStringLiteral("仅原码 · 换算及单位待确认");
     if(s=="table_formula"||s=="table_enum"||s=="table_string"||s=="table_raw_hex")
         return QStringLiteral("字段表解析");
     if(s=="table_enum_unknown_value")return QStringLiteral("未知枚举值");
@@ -104,6 +106,7 @@ QString MainWindow::utcLabel(const QDateTime &time)const{
                           QStringLiteral("接收时间未知");
 }
 QString MainWindow::eventTitle(const BusinessPacket &packet)const{
+    if(packet.identification=="by04_observed_layout_candidate")return packet.packetLabel;
     if(packet.identification=="by04_ccsds_header_only")
         return packet.packetLabel;
     if(packet.identification=="by04_opaque_kiss")
@@ -245,7 +248,9 @@ void MainWindow::populateEvents(){
             QStringLiteral("本机记录时间；尚未确认日志时区\n%1").arg(basis)));
         eventTable_->setItem(i,1,item(title,
             QStringLiteral("应用数据包字节：%1\nCRC：未校验").arg(b.transport.bytes.size())));
-        const QString status=b.identification=="by04_ccsds_header_only"?
+        const QString status=b.identification=="by04_observed_layout_candidate"?
+            QStringLiteral("实包布局候选 · 部分浮点已对照"):
+            b.identification=="by04_ccsds_header_only"?
             QStringLiteral("CCSDS 包头已解析 · 工程量待定义"):
             (b.packetName.isEmpty()?QStringLiteral("类型未知"):
                                     QStringLiteral("已匹配字段表"));
@@ -316,13 +321,13 @@ void MainWindow::updateMetrics(){
     for(const auto &p:business_)
         if(!p.packetName.isEmpty())++good;
     const bool by04=satellite()=="BY04";
-    recognizedOnly_->setText(by04?QStringLiteral("仅显示已解析包头"):
+    recognizedOnly_->setText(by04?QStringLiteral("仅显示布局候选或包头"):
                                   QStringLiteral("仅显示已识别数据"));
     auto label=[](QLabel *value){
         return value->parentWidget()->findChild<QLabel*>("subtitle");
     };
     if(auto *caption=label(recognizedMetric_))
-        caption->setText(by04?QStringLiteral("已解析 CCSDS 包头"):
+        caption->setText(by04?QStringLiteral("布局候选 / 包头"):
                              QStringLiteral("已识别业务包"));
     if(auto *caption=label(unknownMetric_))
         caption->setText(by04?QStringLiteral("未分类 KISS 业务包"):
@@ -332,7 +337,7 @@ void MainWindow::updateMetrics(){
     imageMetric_->setText(QString::number(images_.size()));
     transportMetric_->setText(QStringLiteral("%1 包").arg(packets_.size()));
     message_->setText(satellite()=="BY04"?
-        QStringLiteral("BY04 · KISS %1 包 · 工程字段表待确认 · VC1 原生 SSDV %2 包")
+        QStringLiteral("BY04 · KISS %1 包 · OBC-SF / BUV-S0 实包布局候选 · 未知公式保留原码 · SSDV %2 包")
             .arg(packets_.size()).arg(images_.size()):
         QStringLiteral("KISS 已重组：%1 · 应用 CRC 未校验 · 缺帧中断：%2")
             .arg(packets_.size()).arg(transportStats_.interruptedByCounterGap));
@@ -406,7 +411,10 @@ void MainWindow::populateEngineering(int index){
             QStringLiteral("当前时段暂无符合公开 27 类定义的分系统业务包；原始 KISS 已保留于“原始数据”。"));
         return;
     }
-    engineeringSummary_->setText(chosen->identification=="by04_ccsds_header_only"?
+    engineeringSummary_->setText(chosen->identification=="by04_observed_layout_candidate"?
+        QStringLiteral("%1 · %2 项网页位地址 · 部分浮点有原码对照；数值包型、完整公式和单位未获正式定义 · CRC 未校验")
+            .arg(eventTitle(*chosen)).arg(chosen->fields.size()):
+        chosen->identification=="by04_ccsds_header_only"?
         QStringLiteral("%1 · CCSDS 包头已解析 · %2 项协议字段 · BY04 工程遥测字段仍待确认")
             .arg(eventTitle(*chosen)).arg(chosen->fields.size()):
         QStringLiteral("%1 · %2 项参数 · 识别方式：%3 · 应用 CRC 未校验")
@@ -425,7 +433,7 @@ void MainWindow::populateEngineering(int index){
             f.nameCn.isEmpty()?f.code:f.nameCn,f.value,f.unit,labelStatus(f.status)});
         field->setData(0,Qt::UserRole,f.code);
         field->setData(0,Qt::UserRole+1,chosen->packetName);
-        field->setToolTip(0,f.code+"\n"+f.nameEn);
+        field->setToolTip(0,f.code+"\n"+f.nameEn+"\n"+f.bits+"\n"+f.dataType+"\n"+f.definitionEvidence);
         field->setToolTip(1,QStringLiteral("原始 HEX：")+f.rawHex);
     }
     fieldTree_->expandAll();
@@ -476,8 +484,8 @@ void MainWindow::updateAttitude(int index){
         normLabel_->setText(QStringLiteral("—"));
         attitudeWidget_->setQuaternion(QQuaternion(),false);
         attitudeInfo_->setText(QStringLiteral(
-            "BY04 · 航天器姿态工程字段映射尚未确认。"
-            "不使用 ASRTU-1 SAT-S3 四元数位置，也不推断轨道或极化角。"));
+            "BY04 · 网页 OBC-SF 的姿态四元数已作为实包布局候选列于业务遥测。"
+            "正式分包映射、姿态参考系及分量约定仍未确认，三维姿态暂不可用。"));
         auto *chart=new QChart;
         chart->setTitle(QStringLiteral("BY04 姿态时序：等待专用工程遥测字段表"));
         attitudeChart_->setChart(chart);

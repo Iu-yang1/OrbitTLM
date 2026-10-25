@@ -1,0 +1,148 @@
+{
+  "source_url": "http://119.45.229.166/get_data?type=all_sys&sat=BY-04uv&callbackfunc=gettable",
+  "packet_names": {
+    "测控板-测控-00包": "TTC-S0",
+    "DBW-00包": "BDM-S0",
+    "CMOS小相机-小相机-00包": "SXJ-S0",
+    "姿轨控-姿轨控00-00包": "ZGK-S0",
+    "姿轨控-姿轨控01-01包": "ZGK-S1",
+    "姿轨控-姿轨控02-02包": "ZGK-S2",
+    "姿轨控-姿轨控03慢包-03包": "ZGK-S3",
+    "姿轨控-姿轨控04查询包-04包": "ZGK-S4",
+    "姿轨控-姿轨控05控制参数-05包": "ZGK-S5",
+    "姿轨控-姿轨控06查询包-06包": "ZGK-S6",
+    "姿轨控-姿轨控07轨道预报-07包": "ZGK-S7",
+    "姿轨控-姿轨控08执行机构-08包": "ZGK-S8",
+    "姿轨控-姿轨控09屏蔽卸载-09包": "ZGK-S9",
+    "姿轨控-姿轨控0A任务启动-0A包": "ZGK-SA",
+    "姿轨控-姿轨控0B安装矩阵-0B包": "ZGK-SB",
+    "姿轨控-姿轨控0C指令地点-0C包": "ZGK-SC",
+    "姿轨控-姿轨控0D测试-0D包": "ZGK-SD",
+    "姿轨控-姿轨控0E指令地点短-0E包": "ZGK-SE",
+    "AI板-AI板0-00包": "AIB-S0",
+    "AI板-AI板1-01包": "AIB-S1",
+    "AI板-AI板2-02包": "AIB-S2",
+    "飞轮X-FWX-00包": "FWX-S0",
+    "飞轮Y-FWY-00包": "FWY-S0",
+    "飞轮Z-FWZ-00包": "FWZ-S0",
+    "飞轮S-FWS-00包": "FWS-S0",
+    "星敏A-星敏A-00包": "XMA-S0",
+    "星敏B-星敏B-00包": "XMB-S0",
+    "太敏-太敏-00包": "TYM-S0",
+    "GNSS-GNSS工参-00包": "GNS-S0",
+    "GNSS-GNSS广播-01包": "GNS-S1",
+    "MEMS陀螺1-MEMS1-00包": "MEA-S0",
+    "MEMS陀螺2-MEMS2-00包": "MEB-S0",
+    "磁强计1-磁强计1-00包": "CQA-S0",
+    "磁强计2-磁强计2-00包": "CQB-S0",
+    "基带板UV-UV基带板遥测-00包": "BUV-S0",
+    "基带板UV-偏振相机遥测-01包": "BUV-S1",
+    "基带板UV-屏幕遥测-02包": "BUV-S2",
+    "高清相机-冯学姐相机-00包": "FXJ-S0",
+    "高清相机-冯学姐文件-01包": "FXJ-S1",
+    "屏幕-屏幕遥测响应-00包": "SCR-S0",
+    "计算机-计算机00-00包": "OBC-S0",
+    "计算机-计算机数传-01包": "OBC-S1",
+    "计算机-计算机上注-02包": "OBC-S2",
+    "计算机-电源开关状态-03包": "OBC-S3",
+    "计算机-电源开关计数-04包": "OBC-S4",
+    "计算机-计算机快包-05包": "OBC-S5",
+    "计算机-平台相关FRAM-06包": "OBC-S6",
+    "计算机-姿轨控相关FRAM-07包": "OBC-S7",
+    "计算机-姿轨控相关FRAMP2-08包": "OBC-S8",
+    "计算机-ADC采集-09包": "OBC-S9",
+    "计算机-单机状态快-0A包": "OBC-SA",
+    "计算机-单机状态慢-0B包": "OBC-SB",
+    "计算机-计算机ADC-0C包": "OBC-SC",
+    "计算机-关键遥测-0F包": "OBC-SF"
+  },
+  "numeric_dispatch": "only_two_observed_layout_candidates",
+  "known_fields": [
+    {
+      "packet": "TTC-S0",
+      "label_cn": "测控板-测控-00包",
+      "field_rows": 57
+    },
+    {
+      "packet": "ZGK-S0",
+      "label_cn": "姿轨控-姿轨控00-00包",
+      "field_rows": 77
+    },
+    {
+      "packet": "ZGK-S1",
+      "label_cn": "姿轨控-姿轨控01-01包",
+      "field_rows": 98
+    },
+    {
+      "packet": "ZGK-S2",
+      "label_cn": "姿轨控-姿轨控02-02包",
+      "field_rows": 51
+    },
+    {
+      "packet": "AIB-S0",
+      "label_cn": "AI板-AI板0-00包",
+      "field_rows": 49
+    },
+    {
+      "packet": "GNS-S0",
+      "label_cn": "GNSS-GNSS工参-00包",
+      "field_rows": 61
+    },
+    {
+      "packet": "MEA-S0",
+      "label_cn": "MEMS陀螺1-MEMS1-00包",
+      "field_rows": 4
+    },
+    {
+      "packet": "BUV-S0",
+      "label_cn": "基带板UV-UV基带板遥测-00包",
+      "field_rows": 99
+    },
+    {
+      "packet": "BUV-S1",
+      "label_cn": "基带板UV-偏振相机遥测-01包",
+      "field_rows": 38
+    },
+    {
+      "packet": "FXJ-S0",
+      "label_cn": "高清相机-冯学姐相机-00包",
+      "field_rows": 50
+    },
+    {
+      "packet": "OBC-S0",
+      "label_cn": "计算机-计算机00-00包",
+      "field_rows": 72
+    },
+    {
+      "packet": "OBC-S3",
+      "label_cn": "计算机-电源开关状态-03包",
+      "field_rows": 108
+    },
+    {
+      "packet": "OBC-S4",
+      "label_cn": "计算机-电源开关计数-04包",
+      "field_rows": 114
+    },
+    {
+      "packet": "OBC-S5",
+      "label_cn": "计算机-计算机快包-05包",
+      "field_rows": 19
+    },
+    {
+      "packet": "OBC-SA",
+      "label_cn": "计算机-单机状态快-0A包",
+      "field_rows": 190
+    },
+    {
+      "packet": "OBC-SC",
+      "label_cn": "计算机-计算机ADC-0C包",
+      "field_rows": 20
+    },
+    {
+      "packet": "OBC-SF",
+      "label_cn": "计算机-关键遥测-0F包",
+      "field_rows": 220
+    }
+  ],
+  "snapshot_sha256": "088d8943ebfad2378471c8efb9ad94ca98a071e2adb37aa4573009e0c25ee8ca"
+}

@@ -7,7 +7,7 @@ OrbitTLM is a C++20 / Qt 6 / CMake / SQLite desktop workbench for **offline sate
 - Imports `decoder.log` and `SSDV_received_frames223.bin` into the **same session**.
 - Correlates *identical 223-byte frames* by SHA-256; preserves raw-only records, duplicates, and provenance rather than silently marking them FEC-corrected.
 - Distinguishes log capture time from spacecraft UTC: absent onboard UTC is **unknown**, not interpolated.
-- Each decoded RS information frame is exactly **5 bytes of short CCSDS TM header + 218 bytes of KISS stream**. RS parity is not present in these 223 bytes.
+- Each decoded RS information frame is exactly **5 bytes of short CCSDS TM header + 218 data bytes**. BY04 VC1 contains native DSLWP SSDV; its VC0/VC2 carry KISS. RS parity is not present in these 223 bytes.
 - Variable-length subsystem packets have CRC added before KISS encoding; multiple packets can share a TM frame, or one packet can span frames.
 - KISS escapes are processed across TM frame boundaries, independently per virtual channel, before any optional CCSDS Space Packet-shaped inner header is considered.
 - Application CRC is not checked: this version restores KISS packets without using unverified CRC parameters to discard data.
@@ -40,6 +40,49 @@ OrbitTLM-cli --satellite ASRTU-1 --log decoder.log --bin SSDV_received_frames223
 ```
 
 For BY04 use `--satellite BY04` and optional `--profile profiles/BY04.template.json`. Data fields without a confirmed schema remain raw.
+
+## BY04 dashboard evidence and observed layouts
+
+The BY-04uv page was reachable on 2026-10-25. Its same-origin JSONP API publishes
+54 packet names and 3,074 populated field rows, but no numeric dispatch table,
+complete source formulas, data types or units. This is **not a completed BY04
+engineering telemetry dictionary**.
+
+The independent BY04 decoder now exposes two **observed layout candidates**:
+
+| Dashboard name | Required KISS identity / subtype | VC | KISS bytes | Field base | Fields |
+| --- | --- | --- | --- | --- | --- |
+| OBC-SF | `08 F0` / `0F` | 2 | 198 | byte 7 | 220 |
+| BUV-S0 | `08 D2` / `00` | 0 | 134 | byte 7 | 99 |
+
+These associations are corroborated by SCID `0x205` captures and dashboard field
+addresses, rather than an official numeric dispatch definition. They are always
+identified as `by04_observed_layout_candidate`, with `main_type=-1`. Full inner
+length, identity, subtype, VC and satellite checks are required; other payloads
+remain raw or CCSDS-header-only. ASRTU field catalogs are never consulted.
+
+Only 20 fields have exact server raw/binary32 value pairs (16 OBC, 4 BUV).
+Their observed big-endian IEEE 754 conversion is labeled
+`by04_observed_float32`, not an official source formula. Remaining fields keep
+HEX/unsigned bit patterns and `raw_by04_conversion_unknown`; units stay empty.
+OBC quaternion bit addresses are 139/143/147/151 relative to byte 7, and appear
+in telemetry JSON/CSV. Packet integrity, coordinate frame, component convention,
+voltage/temperature scaling and onboard UTC epoch remain unverified. The
+dedicated attitude export and 3D view continue to require a confirmed schema.
+
+The two catalogs are embedded in the binaries, so users need no site connection.
+`protocols/by04/` preserves evidence pairs and a dashboard name index.
+Recollect the public evidence without executing JSONP:
+
+```sh
+python scripts/collect_by04_dashboard.py collected-by04
+OrbitTLM-cli --satellite BY04 --bin SSDV_received_frames223.bin --telemetry-json by04.json --telemetry-csv by04.csv
+```
+
+For full protocol confirmation, obtain the server's BY-04uv `system.csv` plus
+per-packet definition CSVs (numeric IDs, base offsets, signedness/float encoding,
+formulas and units), and a matching raw packet/server decoded record. A screenshot
+or an `f_double` value alone cannot establish a conversion.
 
 Open the `OrbitTLM` executable. Use **Import session** to choose a log and binary file (either may be omitted), then choose the satellite profile and import. Exports include UTC provenance and quality labels.
 

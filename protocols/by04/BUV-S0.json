@@ -1,0 +1,1499 @@
+{
+  "packet": "BUV-S0",
+  "label_cn": "基带板UV-UV基带板遥测-00包",
+  "revision": "dashboard-observed-2026-10-25",
+  "identity": 2258,
+  "subtype": 0,
+  "vcid": 0,
+  "kiss_octets": 134,
+  "field_base_kiss_octet": 7,
+  "identification_evidence": "observed_layout_candidate_not_official_wire_dictionary",
+  "source_url": "http://119.45.229.166/get_data?type=system&sat=BY-04uv&code=BUV-S0&callbackfunc=data_callback",
+  "fields": [
+    {
+      "id": "BUV-C00000.7.8",
+      "bits": "0.7.8",
+      "name_cn": "Z7温度",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "66",
+        "f_text": "66",
+        "f_double": 66,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00001.7.8",
+      "bits": "1.7.8",
+      "name_cn": "PCB温度",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "56",
+        "f_text": "56",
+        "f_double": 56,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00002.7.1",
+      "bits": "2.7.1",
+      "name_cn": "相机连拍状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (连拍中)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00002.6.1",
+      "bits": "2.6.1",
+      "name_cn": "UDP数传状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (无UDP下传)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00002.5.1",
+      "bits": "2.5.1",
+      "name_cn": "X频段数传状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (无射频下传)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00002.4.1",
+      "bits": "2.4.1",
+      "name_cn": "数传网卡在线状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (离线)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00002.3.1",
+      "bits": "2.3.1",
+      "name_cn": "TMTC PDU在线状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (工作)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00002.2.1",
+      "bits": "2.2.1",
+      "name_cn": "偏振相机在线状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (离线)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00002.1.1",
+      "bits": "2.1.1",
+      "name_cn": "屏幕在线状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (离线)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00002.0.1",
+      "bits": "2.0.1",
+      "name_cn": "Orin在线状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (离线)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00003.7.32",
+      "bits": "3.7.32",
+      "name_cn": "接收信号强度1",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3268438007",
+        "f_text": "-104.20305633544922",
+        "f_double": -104.20305633544922,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "BUV-C00007.7.32",
+      "bits": "7.7.32",
+      "name_cn": "接收频偏1",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "1159189479",
+        "f_text": "2429.243896484375",
+        "f_double": 2429.243896484375,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "BUV-C00011.7.8",
+      "bits": "11.7.8",
+      "name_cn": "无线接收计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00012.7.8",
+      "bits": "12.7.8",
+      "name_cn": "无线发送计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "232",
+        "f_text": "232",
+        "f_double": 232,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00013.7.8",
+      "bits": "13.7.8",
+      "name_cn": "无线指令接收计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00014.7.8",
+      "bits": "14.7.8",
+      "name_cn": "无线指令错误计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00015.7.8",
+      "bits": "15.7.8",
+      "name_cn": "无线最近指令",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00016.7.8",
+      "bits": "16.7.8",
+      "name_cn": "无线执行结果",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00017.7.8",
+      "bits": "17.7.8",
+      "name_cn": "CAN错误计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00018.7.8",
+      "bits": "18.7.8",
+      "name_cn": "CAN接收计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "228",
+        "f_text": "228",
+        "f_double": 228,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00019.7.8",
+      "bits": "19.7.8",
+      "name_cn": "CAN发送计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "68",
+        "f_text": "68",
+        "f_double": 68,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00020.7.8",
+      "bits": "20.7.8",
+      "name_cn": "任务过程标识",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00021.7.8",
+      "bits": "21.7.8",
+      "name_cn": "下传自增计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00022.7.8",
+      "bits": "22.7.8",
+      "name_cn": "CAN最近指令",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "49",
+        "f_text": "0x31",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00023.7.8",
+      "bits": "23.7.8",
+      "name_cn": "CAN执行结果",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00024.7.32",
+      "bits": "24.7.32",
+      "name_cn": "Z7运行时间",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "177204",
+        "f_text": "177204",
+        "f_double": 177204,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00028.7.32",
+      "bits": "28.7.32",
+      "name_cn": "接收信号强度2",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3268364924",
+        "f_text": "-103.64547729492188",
+        "f_double": -103.64547729492188,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "BUV-C00032.7.1",
+      "bits": "32.7.1",
+      "name_cn": "配置1状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (已配置)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00032.6.1",
+      "bits": "32.6.1",
+      "name_cn": "配置2状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (未配置)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00032.5.1",
+      "bits": "32.5.1",
+      "name_cn": "配置3状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (未配置)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00032.4.1",
+      "bits": "32.4.1",
+      "name_cn": "配置4状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (已配置)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00032.3.1",
+      "bits": "32.3.1",
+      "name_cn": "当前启动分区",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (A区)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00032.2.1",
+      "bits": "32.2.1",
+      "name_cn": "下次启动分区",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (A区)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00032.1.1",
+      "bits": "32.1.1",
+      "name_cn": "分区切换使能",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (使能)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00068.7.8",
+      "bits": "68.7.8",
+      "name_cn": "保留",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "10",
+        "f_text": "0xA",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00033.7.8",
+      "bits": "33.7.8",
+      "name_cn": "Z7指令执行计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "7",
+        "f_text": "7",
+        "f_double": 7,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00034.7.8",
+      "bits": "34.7.8",
+      "name_cn": "文件发送序号",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "136",
+        "f_text": "136",
+        "f_double": 136,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00035.7.32",
+      "bits": "35.7.32",
+      "name_cn": "文件发送长度",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "2430464",
+        "f_text": "2430464",
+        "f_double": 2430464,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00039.7.32",
+      "bits": "39.7.32",
+      "name_cn": "文件发送CRC",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1644602131",
+        "f_text": "0x6206A313",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00043.7.32",
+      "bits": "43.7.32",
+      "name_cn": "文件发送偏移地址",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "2639637",
+        "f_text": "0x284715",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00047.7.16",
+      "bits": "47.7.16",
+      "name_cn": "文件发送包长",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00049.7.8",
+      "bits": "49.7.8",
+      "name_cn": "系统errno序号",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00050.7.8",
+      "bits": "50.7.8",
+      "name_cn": "文件接收序号",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00051.7.16",
+      "bits": "51.7.16",
+      "name_cn": "文件接收总包数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00053.7.16",
+      "bits": "53.7.16",
+      "name_cn": "文件接收完成包数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00055.7.16",
+      "bits": "55.7.16",
+      "name_cn": "文件接收最后包序号",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00057.7.8",
+      "bits": "57.7.8",
+      "name_cn": "VC2 FIFO缓存百分比",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00058.7.8",
+      "bits": "58.7.8",
+      "name_cn": "VC1 FIFO缓存百分比",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00059.7.32",
+      "bits": "59.7.32",
+      "name_cn": "接收频偏2",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3269925700",
+        "f_text": "-115.55325317382812",
+        "f_double": -115.55325317382812,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "BUV-C00063.7.8",
+      "bits": "63.7.8",
+      "name_cn": "Z7软件版本",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "9",
+        "f_text": "0x9",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00064.7.8",
+      "bits": "64.7.8",
+      "name_cn": "Z7复位计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "8",
+        "f_text": "8",
+        "f_double": 8,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00065.7.8",
+      "bits": "65.7.8",
+      "name_cn": "内核电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0.0",
+        "f_double": 0.0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00066.7.8",
+      "bits": "66.7.8",
+      "name_cn": "IO电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0.0",
+        "f_double": 0.0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00067.7.8",
+      "bits": "67.7.8",
+      "name_cn": "DDR电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0.0",
+        "f_double": 0.0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00069.7.8",
+      "bits": "69.7.8",
+      "name_cn": "CPU1使用率",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "119",
+        "f_text": "46.6666666613",
+        "f_double": 46.6666666613,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00070.7.8",
+      "bits": "70.7.8",
+      "name_cn": "CPU2使用率",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "53",
+        "f_text": "20.7843137231",
+        "f_double": 20.7843137231,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00071.7.8",
+      "bits": "71.7.8",
+      "name_cn": "内存使用率",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "113",
+        "f_text": "44.3137254851",
+        "f_double": 44.3137254851,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00072.7.8",
+      "bits": "72.7.8",
+      "name_cn": "程序A区使用率",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "61",
+        "f_text": "61",
+        "f_double": 61,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00073.7.8",
+      "bits": "73.7.8",
+      "name_cn": "程序B区使用率",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "61",
+        "f_text": "61",
+        "f_double": 61,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00074.7.8",
+      "bits": "74.7.8",
+      "name_cn": "数据区使用率",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00075.7.8",
+      "bits": "75.7.8",
+      "name_cn": "缓存文件接收序号",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00076.7.32",
+      "bits": "76.7.32",
+      "name_cn": "文件接收长度",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00080.7.16",
+      "bits": "80.7.16",
+      "name_cn": "缓存文件接收包长",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00082.7.8",
+      "bits": "82.7.8",
+      "name_cn": "当前DSP",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00083.7.8",
+      "bits": "83.7.8",
+      "name_cn": "当前FPGA",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00084.7.32",
+      "bits": "84.7.32",
+      "name_cn": "UHF帧间隔时间",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "431666",
+        "f_text": "431666",
+        "f_double": 431666,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00088.7.8",
+      "bits": "88.7.8",
+      "name_cn": "本机工参下行间隔",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "30",
+        "f_double": 30,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00089.7.8",
+      "bits": "89.7.8",
+      "name_cn": "遥测FEC冗余率",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "32",
+        "f_text": "0.125",
+        "f_double": 0.125,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00090.7.8",
+      "bits": "90.7.8",
+      "name_cn": "数传FEC冗余率",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "8",
+        "f_text": "0.08",
+        "f_double": 0.08,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00091.7.8",
+      "bits": "91.7.8",
+      "name_cn": "射频 3.3V电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "167",
+        "f_text": "3.34",
+        "f_double": 3.34,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00092.7.8",
+      "bits": "92.7.8",
+      "name_cn": "射频 3.3V电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00093.7.8",
+      "bits": "93.7.8",
+      "name_cn": "备用 3.3V电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "9",
+        "f_text": "0.18",
+        "f_double": 0.18,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00094.7.8",
+      "bits": "94.7.8",
+      "name_cn": "备用 3.3V电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00095.7.8",
+      "bits": "95.7.8",
+      "name_cn": "Z7 3.3V电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "166",
+        "f_text": "3.3200000000000003",
+        "f_double": 3.3200000000000003,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00096.7.8",
+      "bits": "96.7.8",
+      "name_cn": "Z7 3.3V电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "43",
+        "f_text": "430",
+        "f_double": 430,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00097.7.8",
+      "bits": "97.7.8",
+      "name_cn": "STM32 3.3V电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "165",
+        "f_text": "3.3000000000000003",
+        "f_double": 3.3000000000000003,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00098.7.8",
+      "bits": "98.7.8",
+      "name_cn": "STM32 3.3V电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "8",
+        "f_text": "80",
+        "f_double": 80,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00099.7.8",
+      "bits": "99.7.8",
+      "name_cn": "射频 1.8V电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "90",
+        "f_text": "1.8",
+        "f_double": 1.8,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00100.7.8",
+      "bits": "100.7.8",
+      "name_cn": "射频 1.8V电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "28",
+        "f_text": "280",
+        "f_double": 280,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00101.7.8",
+      "bits": "101.7.8",
+      "name_cn": "数字 1.8V电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "90",
+        "f_text": "1.8",
+        "f_double": 1.8,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00102.7.8",
+      "bits": "102.7.8",
+      "name_cn": "数字 1.8V电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "25",
+        "f_text": "250",
+        "f_double": 250,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00103.7.8",
+      "bits": "103.7.8",
+      "name_cn": "DRAM 1.5V电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "74",
+        "f_text": "1.48",
+        "f_double": 1.48,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00104.7.8",
+      "bits": "104.7.8",
+      "name_cn": "DRAM 1.5V电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "10",
+        "f_text": "100",
+        "f_double": 100,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00105.7.8",
+      "bits": "105.7.8",
+      "name_cn": "FPGA核心 1.0V电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "49",
+        "f_text": "0.98",
+        "f_double": 0.98,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00106.7.8",
+      "bits": "106.7.8",
+      "name_cn": "FPGA核心 1.0V电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "67",
+        "f_text": "670",
+        "f_double": 670,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00107.7.8",
+      "bits": "107.7.8",
+      "name_cn": "STM32内部温度",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "85",
+        "f_text": "85",
+        "f_double": 85,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00108.7.8",
+      "bits": "108.7.8",
+      "name_cn": "相机供电状态标志位",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "32",
+        "f_text": "0x20",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00109.7.8",
+      "bits": "109.7.8",
+      "name_cn": "保留1",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00110.7.8",
+      "bits": "110.7.8",
+      "name_cn": "Z7硬件复位累计次数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00111.7.8",
+      "bits": "111.7.8",
+      "name_cn": "星务422接收计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00112.7.8",
+      "bits": "112.7.8",
+      "name_cn": "星务422发送计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00113.7.8",
+      "bits": "113.7.8",
+      "name_cn": "UART4接收计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "36",
+        "f_text": "36",
+        "f_double": 36,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00114.7.8",
+      "bits": "114.7.8",
+      "name_cn": "UART4发送计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "36",
+        "f_text": "36",
+        "f_double": 36,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00115.7.8",
+      "bits": "115.7.8",
+      "name_cn": "相机422接收计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00116.7.8",
+      "bits": "116.7.8",
+      "name_cn": "相机422发送计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00117.7.8",
+      "bits": "117.7.8",
+      "name_cn": "STM32最后外部指令",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00118.7.8",
+      "bits": "118.7.8",
+      "name_cn": "最后指令执行结果",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00119.7.32",
+      "bits": "119.7.32",
+      "name_cn": "STM32系统运行时间戳",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "177176834",
+        "f_text": "177176834",
+        "f_double": 177176834,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "BUV-C00123.7.32",
+      "bits": "123.7.32",
+      "name_cn": "保留尾部",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:32.460",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    }
+  ]
+}

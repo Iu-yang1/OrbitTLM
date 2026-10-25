@@ -1,6 +1,13 @@
 #include "by04.h"
 #include <QSet>
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <bit>
+#include <cmath>
 #include <algorithm>
+// Resource registration must be outside the orbit namespace for static linking.
+static void registerBy04Catalog(){Q_INIT_RESOURCE(by04_catalog);}
 namespace orbit {
 namespace {
 int u8(const QByteArray &data,int index){return int(quint8(data.at(index)));}
@@ -12,6 +19,85 @@ EngineeringField field(const QString &code,const QString &name,
     QString raw=QString("%1").arg(quint32(value),bytes*2,16,QChar('0')).toUpper();
     return {code,"",name,"","",raw,QString::number(value),
             QString::number(value),"",status};
+}
+const QVector<QJsonObject> &observedCatalog(){
+    static const auto catalog=[]{
+        registerBy04Catalog();
+        QVector<QJsonObject> kinds;
+        for(const auto &name:{"OBC-SF","BUV-S0"}){
+            QFile file(QString(":/by04/%1.json").arg(name));
+            if(file.open(QIODevice::ReadOnly)){
+                const auto doc=QJsonDocument::fromJson(file.readAll());
+                if(doc.isObject())kinds.push_back(doc.object());
+            }
+        }
+        return kinds;
+    }();
+    return catalog;
+}
+bool decodeObserved(const ApplicationPacket &packet,BusinessPacket &result){
+    // The dashboard publishes no numeric dispatch table or source formulas.
+    // These two layouts are empirical candidates corroborated by the SCID 0x205
+    // captures, NOT official mission dictionary matches. Never probe offsets.
+    if(packet.satellite!="BY04" || packet.bytes.size()<7)return false;
+    const auto &b=packet.bytes;
+    const int identity=(u8(b,0)<<8)|u8(b,1);
+    for(const auto &kind:observedCatalog()){
+        if(identity!=kind.value("identity").toInt() ||
+           packet.vcid!=kind.value("vcid").toInt() ||
+           b.size()!=kind.value("kiss_octets").toInt() ||
+           u8(b,6)!=kind.value("subtype").toInt())continue;
+        // Independent envelope validation; no caller classification is trusted.
+        if(((u8(b,4)<<8)|u8(b,5))+7!=b.size())return false;
+        result.packetName="BY04-"+kind.value("packet").toString();
+        result.packetLabel=kind.value("label_cn").toString()+QStringLiteral(" · 实包布局候选");
+        result.identification="by04_observed_layout_candidate";
+        result.definitionEvidence=kind.value("identification_evidence").toString();
+        result.fieldBaseKissOctet=7;
+        // Keep mainType unknown: the APID-to-subsystem mapping is empirical.
+        result.mainType=-1;result.subType=u8(b,6);
+        const QByteArray payload=b.mid(7);
+        for(const auto &entry:kind.value("fields").toArray()){
+            const auto d=entry.toObject();
+            const auto position=d.value("bits").toString().split('.');
+            if(position.size()!=3){++result.skippedFields;continue;}
+            const int start=position[0].toInt()*8+7-position[1].toInt();
+            const int length=position[2].toInt();
+            if(start<0||length<1||length>64||start+length>payload.size()*8){
+                ++result.skippedFields;continue;
+            }
+            quint64 raw=0;
+            for(int i=0;i<length;++i){const int bit=start+i;
+                raw=(raw<<1)|((quint8(payload.at(bit/8))>>(7-bit%8))&1u);
+            }
+            EngineeringField f;
+            f.code=d.value("id").toString();f.bits=d.value("bits").toString();
+            f.nameCn=d.value("name_cn").toString();
+            f.rawHex=QString::number(raw,16).rightJustified((length+7)/8*2,'0').toUpper();
+            f.rawNumber=QString::number(raw);f.value=f.rawHex;
+            f.dataType=d.value("data_type").toString();
+            f.definitionEvidence="dashboard_bit_address; observed_layout_candidate; source_formula_unavailable";
+            f.status="raw_by04_conversion_unknown";
+            // Only a bit-for-bit server raw/float pair authorizes binary32.
+            if(length==32 && f.dataType=="ieee754_binary32_be_observed"){
+                const auto e=d.value("evidence").toObject();bool ok=false;
+                const quint32 oracle=e.value("x_text").toString().toUInt(&ok);
+                const double expected=e.value("f_double").toDouble();
+                if(ok && double(std::bit_cast<float>(oracle))==expected){
+                    const float value=std::bit_cast<float>(quint32(raw));
+                    if(std::isfinite(value)){
+                        f.value=QString::number(double(value),'g',15);
+                        f.formula="F=FX";
+                        f.status="by04_observed_float32";
+                        f.definitionEvidence="exact_dashboard_raw_float32_pair; observed_layout_candidate; unit_unconfirmed";
+                    }else f.status="raw_by04_nonfinite_float";
+                }
+            }
+            result.fields.push_back(std::move(f));
+        }
+        return true;
+    }
+    return false;
 }
 quint32 crc32Dslwp(const QByteArray &frame) {
     // Applies ONLY to 218-byte VC1 DSLWP SSDV image packets.
@@ -33,6 +119,10 @@ BusinessPacket By04Decoder::decode(const ApplicationPacket &packet){
     BusinessPacket result;
     result.transport=packet;
     result.packetLabel=QStringLiteral("BY04 未分类应用数据包");
+    if(packet.satellite!="BY04"){
+        result.identification="by04_wrong_satellite";return result;
+    }
+    if(decodeObserved(packet,result))return result;
     if(packet.classification!="ccsds_space_packet_candidate" ||
        packet.apid<0 || packet.bytes.size()<6) {
         result.identification="by04_opaque_kiss";

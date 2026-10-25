@@ -11,6 +11,9 @@ qt_standard_project_setup()
 add_library(orbittlm_core STATIC src/core.cpp src/core.h src/schema.cpp src/schema.h src/ssdv.cpp src/ssdv.h src/transport.cpp src/transport.h src/business.cpp src/business.h src/by04.cpp src/by04.h)
 target_include_directories(orbittlm_core PUBLIC src)
 target_link_libraries(orbittlm_core PUBLIC Qt6::Core Qt6::Sql Qt6::Network)
+qt_add_resources(orbittlm_core by04_catalog
+  PREFIX "/by04" BASE "protocols/by04"
+  FILES protocols/by04/OBC-SF.json protocols/by04/BUV-S0.json)
 add_executable(OrbitTLM-cli src/cli.cpp)
 target_link_libraries(OrbitTLM-cli PRIVATE orbittlm_core)
 add_library(orbittlm_ui STATIC src/mainwindow.h src/mainwindow_widgets.h src/mainwindow_build.cpp src/mainwindow_data.cpp)
@@ -54,5 +57,8 @@ if(TARGET orbit_tests)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/by04_ssdv_bad_packet.b64"
       "$<TARGET_FILE_DIR:orbit_tests>/fixtures/by04_ssdv_bad_packet.b64"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/by04_business_capture.b64"
+      "$<TARGET_FILE_DIR:orbit_tests>/fixtures/by04_business_capture.b64"
     VERBATIM)
 endif()

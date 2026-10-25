@@ -149,7 +149,8 @@ QJsonObject fieldJson(const EngineeringField &f){
     return {{"code",f.code},{"bits",f.bits},{"name_cn",f.nameCn},
         {"name_en",f.nameEn},{"formula",f.formula},{"raw_hex",f.rawHex},
         {"raw_number",f.rawNumber},{"value",f.value},
-        {"unit",f.unit},{"status",f.status}};
+        {"unit",f.unit},{"status",f.status},{"data_type",f.dataType},
+        {"definition_evidence",f.definitionEvidence}};
 }
 }
 bool BusinessCatalog::loadDirectory(const QString &directory,QString *error){
@@ -300,6 +301,8 @@ QJsonObject BusinessCatalog::toJson(const BusinessPacket &packet){
         {"ccsds_apid",packet.transport.apid},
         {"ccsds_packet_sequence",packet.transport.sequence},
         {"identification",packet.identification},
+        {"definition_evidence",packet.definitionEvidence},
+        {"field_base_kiss_octet",packet.fieldBaseKissOctet},
         {"skipped_fields",packet.skippedFields},{"fields",fields},
         {"vcid",packet.transport.vcid},{"fec_evidence",packet.transport.fecEvidence},
         {"integrity",packet.transport.integrity},{"sources",sources},
@@ -328,7 +331,8 @@ bool BusinessCatalog::exportCsv(const QString &path,const QVector<BusinessPacket
     if(!file.open(QIODevice::WriteOnly|QIODevice::Text)){if(error)*error=file.errorString();return false;}
     QTextStream out(&file);
     out<<"packet,main_type,sub_type,capture_local,time_basis,spacecraft_utc,vcid,fec_evidence,"
-          "integrity,field_code,name_cn,name_en,bit_position,raw_hex,raw_number,formula,value,unit,status\n";
+          "integrity,field_code,name_cn,name_en,bit_position,raw_hex,raw_number,formula,value,unit,status,"
+          "data_type,definition_evidence,identification,field_base_kiss_octet\n";
     for(const auto &p:packets){
         const auto &t=p.transport;
         const QString lead=quoted(p.packetName)+","+QString::number(p.mainType)+","+
@@ -336,12 +340,19 @@ bool BusinessCatalog::exportCsv(const QString &path,const QVector<BusinessPacket
             quoted(t.captureLocal.isValid()?t.captureLocal.toString(Qt::ISODateWithMs):QString())+","+
             quoted(t.timestampBasis)+",,"+QString::number(t.vcid)+","+
             quoted(t.fecEvidence)+","+quoted(t.integrity)+",";
-        if(p.fields.isEmpty()){out<<lead<<"\n";continue;}
+        if(p.fields.isEmpty()){
+            const QStringList rawRow={"","","","",
+                quoted(QString::fromLatin1(t.bytes.toHex().toUpper())),"","","","",
+                quoted("unclassified_packet_raw_bytes"),"",quoted(p.definitionEvidence),
+                quoted(p.identification),QString::number(p.fieldBaseKissOctet)};
+            out<<lead<<rawRow.join(',')<<"\n";continue;
+        }
         for(const auto &f:p.fields)
             out<<lead<<quoted(f.code)<<","<<quoted(f.nameCn)<<","<<quoted(f.nameEn)<<","<<
                 quoted(f.bits)<<","<<quoted(f.rawHex)<<","<<quoted(f.rawNumber)<<","<<
                 quoted(f.formula)<<","<<quoted(f.value)<<","<<quoted(f.unit)<<","<<
-                quoted(f.status)<<"\n";
+                quoted(f.status)<<","<<quoted(f.dataType)<<","<<quoted(f.definitionEvidence)<<","<<
+                quoted(p.identification)<<","<<p.fieldBaseKissOctet<<"\n";
     }
     if(!file.commit()){if(error)*error=file.errorString();return false;}
     return true;

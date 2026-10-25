@@ -431,8 +431,10 @@ void MainWindow::buildEngineering(QTabWidget *tabs){
         const QString packet=item->data(0,Qt::UserRole+1).toString();
         for(int i=0;i<business_.size();++i)if(i<=currentIndex_ && business_[i].packetName==packet)
             for(const auto &f:business_[i].fields)if(f.code==code){
-                fieldDetail_->setText(QStringLiteral("字段编号 %1  ·  位位置 %2\n原始值 %3  ·  换算公式 %4")
-                    .arg(f.code,f.bits,f.rawHex,f.formula));
+                fieldDetail_->setText(QStringLiteral("字段编号 %1  ·  位位置 %2\n原始值 %3  ·  换算公式 %4\n类型 %5  ·  依据 %6")
+                    .arg(f.code,f.bits,f.rawHex,
+                         f.formula.isEmpty()?QStringLiteral("未确认"):f.formula,
+                         f.dataType,f.definitionEvidence));
             }
         plotEngineering(packet,code,currentIndex_);
     });

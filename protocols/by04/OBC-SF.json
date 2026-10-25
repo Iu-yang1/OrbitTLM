@@ -1,0 +1,3314 @@
+{
+  "packet": "OBC-SF",
+  "label_cn": "计算机-关键遥测-0F包",
+  "revision": "dashboard-observed-2026-10-25",
+  "identity": 2288,
+  "subtype": 15,
+  "vcid": 2,
+  "kiss_octets": 198,
+  "field_base_kiss_octet": 7,
+  "identification_evidence": "observed_layout_candidate_not_official_wire_dictionary",
+  "source_url": "http://119.45.229.166/get_data?type=system&sat=BY-04uv&code=OBC-SF&callbackfunc=data_callback",
+  "fields": [
+    {
+      "id": "OBC-CF0000.7.32",
+      "bits": "0.7.32",
+      "name_cn": "UTC时间",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "309711814",
+        "f_text": "309711814",
+        "f_double": 309711814,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0004.7.32",
+      "bits": "4.7.32",
+      "name_cn": "启动时间",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "2529956",
+        "f_text": "2529956",
+        "f_double": 2529956,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0008.7.16",
+      "bits": "8.7.16",
+      "name_cn": "指令接收计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1081",
+        "f_text": "1081",
+        "f_double": 1081,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0010.7.32",
+      "bits": "10.7.32",
+      "name_cn": "最近接收指令",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "100663327",
+        "f_text": "0x600001F",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0014.7.32",
+      "bits": "14.7.32",
+      "name_cn": "最近接收指令时间",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "309706156",
+        "f_text": "309706156",
+        "f_double": 309706156,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0018.7.16",
+      "bits": "18.7.16",
+      "name_cn": "错误指令计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1334",
+        "f_text": "1334",
+        "f_double": 1334,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0020.7.8",
+      "bits": "20.7.8",
+      "name_cn": "错误指令原因",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "3",
+        "f_text": "0x3 (指令码错误)",
+        "f_double": 3,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0021.7.16",
+      "bits": "21.7.16",
+      "name_cn": "执行指令计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1122",
+        "f_text": "1122",
+        "f_double": 1122,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0023.7.32",
+      "bits": "23.7.32",
+      "name_cn": "最近执行指令",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "100663335",
+        "f_text": "0x6000027",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0027.7.32",
+      "bits": "27.7.32",
+      "name_cn": "最近延时遥控指令",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "100663298",
+        "f_text": "0x6000002",
+        "f_double": 255,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0031.7.32",
+      "bits": "31.7.32",
+      "name_cn": "最近延时指令时间",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "309733873",
+        "f_text": "309733873",
+        "f_double": 309733873,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0035.7.16",
+      "bits": "35.7.16",
+      "name_cn": "延时指令计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "28",
+        "f_text": "28",
+        "f_double": 28,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0037.7.8",
+      "bits": "37.7.8",
+      "name_cn": "当班机",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "170",
+        "f_text": "0xAA (invalid)",
+        "f_double": 170,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0038.7.8",
+      "bits": "38.7.8",
+      "name_cn": "当前FLASH",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0039.7.32",
+      "bits": "39.7.32",
+      "name_cn": "复位计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "2825",
+        "f_text": "2825",
+        "f_double": 2825,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0043.7.8",
+      "bits": "43.7.8",
+      "name_cn": "电源阶段",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0044.7.16",
+      "bits": "44.7.16",
+      "name_cn": "12V电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "12136",
+        "f_text": "12136",
+        "f_double": 12136,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0046.7.16",
+      "bits": "46.7.16",
+      "name_cn": "12V电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1773",
+        "f_text": "1773",
+        "f_double": 1773,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0048.7.16",
+      "bits": "48.7.16",
+      "name_cn": "5V电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "5310",
+        "f_text": "5310",
+        "f_double": 5310,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0050.7.16",
+      "bits": "50.7.16",
+      "name_cn": "5V电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "736",
+        "f_text": "736",
+        "f_double": 736,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0052.7.16",
+      "bits": "52.7.16",
+      "name_cn": "充电电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "35",
+        "f_text": "35",
+        "f_double": 35,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0054.7.16",
+      "bits": "54.7.16",
+      "name_cn": "放电电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1985",
+        "f_text": "1985",
+        "f_double": 1985,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0056.7.16",
+      "bits": "56.7.16",
+      "name_cn": "母线电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "15916",
+        "f_text": "15916",
+        "f_double": 15916,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0058.7.16",
+      "bits": "58.7.16",
+      "name_cn": "电池电压",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "15947",
+        "f_text": "15947",
+        "f_double": 15947,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0060.7.16",
+      "bits": "60.7.16",
+      "name_cn": "放电开关状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "2128",
+        "f_text": "2128",
+        "f_double": 2128,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0062.7.16",
+      "bits": "62.7.16",
+      "name_cn": "帆板电流",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0066.7.16",
+      "bits": "66.7.16",
+      "name_cn": "电池温度1",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "2690",
+        "f_text": "2690",
+        "f_double": 2690,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0068.7.16",
+      "bits": "68.7.16",
+      "name_cn": "电池温度2",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "2671",
+        "f_text": "2671",
+        "f_double": 2671,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0070.7.1",
+      "bits": "70.7.1",
+      "name_cn": "蓄电池加热带_2_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0078.7.1",
+      "bits": "78.7.1",
+      "name_cn": "蓄电池加热带_2_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0070.6.1",
+      "bits": "70.6.1",
+      "name_cn": "帆板解锁2",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0078.6.1",
+      "bits": "78.6.1",
+      "name_cn": "帆板解锁2-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0070.5.1",
+      "bits": "70.5.1",
+      "name_cn": "S/C通道板",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0078.5.1",
+      "bits": "78.5.1",
+      "name_cn": "S/C通道板-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0070.4.1",
+      "bits": "70.4.1",
+      "name_cn": "基带板关",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0078.4.1",
+      "bits": "78.4.1",
+      "name_cn": "基带板关-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0078.3.1",
+      "bits": "78.3.1",
+      "name_cn": "保留",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0070.2.1",
+      "bits": "70.2.1",
+      "name_cn": "帆板解锁1",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0078.2.1",
+      "bits": "78.2.1",
+      "name_cn": "帆板解锁1-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0070.1.1",
+      "bits": "70.1.1",
+      "name_cn": "蓄电池加热带1_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0078.1.1",
+      "bits": "78.1.1",
+      "name_cn": "蓄电池加热带1_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0070.0.1",
+      "bits": "70.0.1",
+      "name_cn": "微型相机_5V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0078.0.1",
+      "bits": "78.0.1",
+      "name_cn": "微型相机_5V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0071.7.1",
+      "bits": "71.7.1",
+      "name_cn": "过放保护使能",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0079.7.1",
+      "bits": "79.7.1",
+      "name_cn": "过放保护使能-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0071.6.1",
+      "bits": "71.6.1",
+      "name_cn": "Ka通道板",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0079.6.1",
+      "bits": "79.6.1",
+      "name_cn": "Ka通道板-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0071.5.1",
+      "bits": "71.5.1",
+      "name_cn": "短报文",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0079.5.1",
+      "bits": "79.5.1",
+      "name_cn": "短报文-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0071.4.1",
+      "bits": "71.4.1",
+      "name_cn": "加热带_4_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0079.4.1",
+      "bits": "79.4.1",
+      "name_cn": "加热带_4_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0071.3.1",
+      "bits": "71.3.1",
+      "name_cn": "飞轮3关",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0079.3.1",
+      "bits": "79.3.1",
+      "name_cn": "飞轮3关-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0071.2.1",
+      "bits": "71.2.1",
+      "name_cn": "冷推加热_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0079.2.1",
+      "bits": "79.2.1",
+      "name_cn": "冷推加热_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0071.1.1",
+      "bits": "71.1.1",
+      "name_cn": "太敏_5V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0079.1.1",
+      "bits": "79.1.1",
+      "name_cn": "太敏_5V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0071.0.1",
+      "bits": "71.0.1",
+      "name_cn": "基带板开",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0079.0.1",
+      "bits": "79.0.1",
+      "name_cn": "基带板开-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0072.7.1",
+      "bits": "72.7.1",
+      "name_cn": "冷推电磁阀_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0080.7.1",
+      "bits": "80.7.1",
+      "name_cn": "冷推电磁阀_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0072.6.1",
+      "bits": "72.6.1",
+      "name_cn": "星敏Y_5V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0080.6.1",
+      "bits": "80.6.1",
+      "name_cn": "星敏Y_5V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0072.5.1",
+      "bits": "72.5.1",
+      "name_cn": "屏幕5V_1",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0080.5.1",
+      "bits": "80.5.1",
+      "name_cn": "屏幕5V_1-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0072.4.1",
+      "bits": "72.4.1",
+      "name_cn": "放电开关接通",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0080.4.1",
+      "bits": "80.4.1",
+      "name_cn": "放电开关接通-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0072.3.1",
+      "bits": "72.3.1",
+      "name_cn": "MEMS_B_5V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0080.3.1",
+      "bits": "80.3.1",
+      "name_cn": "MEMS_B_5V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0072.2.1",
+      "bits": "72.2.1",
+      "name_cn": "加热带_3_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0080.2.1",
+      "bits": "80.2.1",
+      "name_cn": "加热带_3_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0072.1.1",
+      "bits": "72.1.1",
+      "name_cn": "自主加电开关断",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0080.1.1",
+      "bits": "80.1.1",
+      "name_cn": "自主加电开关断-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0072.0.1",
+      "bits": "72.0.1",
+      "name_cn": "X测控数传开",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0080.0.1",
+      "bits": "80.0.1",
+      "name_cn": "X测控数传开-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0073.7.1",
+      "bits": "73.7.1",
+      "name_cn": "MEMS_A_5V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0081.7.1",
+      "bits": "81.7.1",
+      "name_cn": "MEMS_A_5V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0073.6.1",
+      "bits": "73.6.1",
+      "name_cn": "飞轮4关",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0081.6.1",
+      "bits": "81.6.1",
+      "name_cn": "飞轮4关-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0073.5.1",
+      "bits": "73.5.1",
+      "name_cn": "加热带_6_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0081.5.1",
+      "bits": "81.5.1",
+      "name_cn": "加热带_6_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0073.4.1",
+      "bits": "73.4.1",
+      "name_cn": "磁强计1_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0081.4.1",
+      "bits": "81.4.1",
+      "name_cn": "磁强计1_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0073.3.1",
+      "bits": "73.3.1",
+      "name_cn": "飞轮1开",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0081.3.1",
+      "bits": "81.3.1",
+      "name_cn": "飞轮1开-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0073.2.1",
+      "bits": "73.2.1",
+      "name_cn": "飞轮4开",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0081.2.1",
+      "bits": "81.2.1",
+      "name_cn": "飞轮4开-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0073.1.1",
+      "bits": "73.1.1",
+      "name_cn": "X测控数传关",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0081.1.1",
+      "bits": "81.1.1",
+      "name_cn": "X测控数传关-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0073.0.1",
+      "bits": "73.0.1",
+      "name_cn": "飞轮1关",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0081.0.1",
+      "bits": "81.0.1",
+      "name_cn": "飞轮1关-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0074.7.1",
+      "bits": "74.7.1",
+      "name_cn": "过放保护禁止",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0082.7.1",
+      "bits": "82.7.1",
+      "name_cn": "过放保护禁止-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0074.6.1",
+      "bits": "74.6.1",
+      "name_cn": "飞轮3开",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0082.6.1",
+      "bits": "82.6.1",
+      "name_cn": "飞轮3开-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0074.5.1",
+      "bits": "74.5.1",
+      "name_cn": "帆板解锁母线接通",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0082.5.1",
+      "bits": "82.5.1",
+      "name_cn": "帆板解锁母线接通-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0074.4.1",
+      "bits": "74.4.1",
+      "name_cn": "磁强计2_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0082.4.1",
+      "bits": "82.4.1",
+      "name_cn": "磁强计2_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0074.3.1",
+      "bits": "74.3.1",
+      "name_cn": "自主加电开关通",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0082.3.1",
+      "bits": "82.3.1",
+      "name_cn": "自主加电开关通-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0074.2.1",
+      "bits": "74.2.1",
+      "name_cn": "星敏X_5V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0082.2.1",
+      "bits": "82.2.1",
+      "name_cn": "星敏X_5V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0074.1.1",
+      "bits": "74.1.1",
+      "name_cn": "飞轮2开",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0082.1.1",
+      "bits": "82.1.1",
+      "name_cn": "飞轮2开-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0074.0.1",
+      "bits": "74.0.1",
+      "name_cn": "飞轮2关",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0082.0.1",
+      "bits": "82.0.1",
+      "name_cn": "飞轮2关-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0075.7.1",
+      "bits": "75.7.1",
+      "name_cn": "放电开关断开",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0083.7.1",
+      "bits": "83.7.1",
+      "name_cn": "放电开关断开-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0075.6.1",
+      "bits": "75.6.1",
+      "name_cn": "屏幕5V_2",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0083.6.1",
+      "bits": "83.6.1",
+      "name_cn": "屏幕5V_2-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0075.5.1",
+      "bits": "75.5.1",
+      "name_cn": "偏振相机_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0083.5.1",
+      "bits": "83.5.1",
+      "name_cn": "偏振相机_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0075.4.1",
+      "bits": "75.4.1",
+      "name_cn": "加热带_1_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0083.4.1",
+      "bits": "83.4.1",
+      "name_cn": "加热带_1_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0075.3.1",
+      "bits": "75.3.1",
+      "name_cn": "GNSS_5V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0083.3.1",
+      "bits": "83.3.1",
+      "name_cn": "GNSS_5V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0075.2.1",
+      "bits": "75.2.1",
+      "name_cn": "加热带_2_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0083.2.1",
+      "bits": "83.2.1",
+      "name_cn": "加热带_2_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0075.1.1",
+      "bits": "75.1.1",
+      "name_cn": "加热带_5_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0083.1.1",
+      "bits": "83.1.1",
+      "name_cn": "加热带_5_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0075.0.1",
+      "bits": "75.0.1",
+      "name_cn": "高清相机_12V",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0083.0.1",
+      "bits": "83.0.1",
+      "name_cn": "高清相机_12V-回读",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0076.7.1",
+      "bits": "76.7.1",
+      "name_cn": "自主加电继电器",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0076.6.1",
+      "bits": "76.6.1",
+      "name_cn": "基带板继电器",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0076.5.1",
+      "bits": "76.5.1",
+      "name_cn": "放电继电器",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0076.4.1",
+      "bits": "76.4.1",
+      "name_cn": "飞轮4继电器",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0076.3.1",
+      "bits": "76.3.1",
+      "name_cn": "飞轮3继电器",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0076.2.1",
+      "bits": "76.2.1",
+      "name_cn": "X测控数传继电器",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0076.1.1",
+      "bits": "76.1.1",
+      "name_cn": "飞轮1继电器",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0076.0.1",
+      "bits": "76.0.1",
+      "name_cn": "飞轮2继电器",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0077.7.1",
+      "bits": "77.7.1",
+      "name_cn": "过放保护继电器",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0077.6.1",
+      "bits": "77.6.1",
+      "name_cn": "AIBoard电源",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0077.5.1",
+      "bits": "77.5.1",
+      "name_cn": "基带板卡",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (卡1)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0077.4.1",
+      "bits": "77.4.1",
+      "name_cn": "基带HW",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (断电)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0077.3.1",
+      "bits": "77.3.1",
+      "name_cn": "基带UV",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (加电)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0084.7.8",
+      "bits": "84.7.8",
+      "name_cn": "X测控遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "148",
+        "f_text": "148",
+        "f_double": 148,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0085.7.8",
+      "bits": "85.7.8",
+      "name_cn": "GNSS遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "59",
+        "f_text": "59",
+        "f_double": 59,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0086.7.8",
+      "bits": "86.7.8",
+      "name_cn": "星敏A遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "20",
+        "f_text": "20",
+        "f_double": 20,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0087.7.8",
+      "bits": "87.7.8",
+      "name_cn": "星敏B遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "223",
+        "f_text": "223",
+        "f_double": 223,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0088.7.8",
+      "bits": "88.7.8",
+      "name_cn": "太敏遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "150",
+        "f_text": "150",
+        "f_double": 150,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0089.7.8",
+      "bits": "89.7.8",
+      "name_cn": "飞轮X遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "100",
+        "f_text": "100",
+        "f_double": 100,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0090.7.8",
+      "bits": "90.7.8",
+      "name_cn": "飞轮Y遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "206",
+        "f_text": "206",
+        "f_double": 206,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0091.7.8",
+      "bits": "91.7.8",
+      "name_cn": "飞轮Z遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "75",
+        "f_text": "75",
+        "f_double": 75,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0092.7.8",
+      "bits": "92.7.8",
+      "name_cn": "飞轮S遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "169",
+        "f_text": "169",
+        "f_double": 169,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0093.7.8",
+      "bits": "93.7.8",
+      "name_cn": "磁强计A遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "146",
+        "f_text": "146",
+        "f_double": 146,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0094.7.8",
+      "bits": "94.7.8",
+      "name_cn": "磁强计B遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "78",
+        "f_text": "78",
+        "f_double": 78,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0095.7.8",
+      "bits": "95.7.8",
+      "name_cn": "陀螺A遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "20",
+        "f_text": "20",
+        "f_double": 20,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0096.7.8",
+      "bits": "96.7.8",
+      "name_cn": "陀螺B遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "18",
+        "f_text": "18",
+        "f_double": 18,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0097.7.8",
+      "bits": "97.7.8",
+      "name_cn": "基带板遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "42",
+        "f_text": "42",
+        "f_double": 42,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0098.7.8",
+      "bits": "98.7.8",
+      "name_cn": "基带板UV遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "213",
+        "f_text": "213",
+        "f_double": 213,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0099.7.8",
+      "bits": "99.7.8",
+      "name_cn": "短报文遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "11",
+        "f_text": "11",
+        "f_double": 11,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0100.7.8",
+      "bits": "100.7.8",
+      "name_cn": "微型相机遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "98",
+        "f_text": "98",
+        "f_double": 98,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0101.7.8",
+      "bits": "101.7.8",
+      "name_cn": "高清相机遥测计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "100",
+        "f_text": "100",
+        "f_double": 100,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0102.7.1",
+      "bits": "102.7.1",
+      "name_cn": "故障标志星敏B",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0102.6.1",
+      "bits": "102.6.1",
+      "name_cn": "故障标志星敏A",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0102.5.1",
+      "bits": "102.5.1",
+      "name_cn": "故障标志陀螺B-z",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0102.4.1",
+      "bits": "102.4.1",
+      "name_cn": "故障标志陀螺B-y",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0102.3.1",
+      "bits": "102.3.1",
+      "name_cn": "故障标志陀螺B-x",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0102.2.1",
+      "bits": "102.2.1",
+      "name_cn": "故障标志陀螺A-z",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0102.1.1",
+      "bits": "102.1.1",
+      "name_cn": "故障标志陀螺A-y",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0102.0.1",
+      "bits": "102.0.1",
+      "name_cn": "故障标志陀螺A-x",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0103.7.1",
+      "bits": "103.7.1",
+      "name_cn": "故障标志磁强计B-z",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0103.6.1",
+      "bits": "103.6.1",
+      "name_cn": "故障标志磁强计B-y",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0103.5.1",
+      "bits": "103.5.1",
+      "name_cn": "故障标志磁强计B-x",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0103.4.1",
+      "bits": "103.4.1",
+      "name_cn": "故障标志磁强计A-z",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0103.3.1",
+      "bits": "103.3.1",
+      "name_cn": "故障标志磁强计A-y",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0103.2.1",
+      "bits": "103.2.1",
+      "name_cn": "故障标志磁强计A-x",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0103.1.1",
+      "bits": "103.1.1",
+      "name_cn": "故障标志GPS六根数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0103.0.1",
+      "bits": "103.0.1",
+      "name_cn": "故障标志GPS位置速度",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0104.5.1",
+      "bits": "104.5.1",
+      "name_cn": "故障标志飞轮S",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0104.4.1",
+      "bits": "104.4.1",
+      "name_cn": "故障标志飞轮Z",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0104.3.1",
+      "bits": "104.3.1",
+      "name_cn": "故障标志飞轮Y",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0104.2.1",
+      "bits": "104.2.1",
+      "name_cn": "故障标志飞轮X",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0104.1.1",
+      "bits": "104.1.1",
+      "name_cn": "故障标志太敏A-b",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0104.0.1",
+      "bits": "104.0.1",
+      "name_cn": "故障标志太敏A-a",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0105.7.8",
+      "bits": "105.7.8",
+      "name_cn": "姿态模式",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "3",
+        "f_text": "0x3 (对日定向三轴稳定)",
+        "f_double": 3,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0106.7.32",
+      "bits": "106.7.32",
+      "name_cn": "姿态模式持续时间",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "1128191080",
+        "f_text": "190.8297119140625",
+        "f_double": 190.8297119140625,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0110.7.8",
+      "bits": "110.7.8",
+      "name_cn": "任务指向标识",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (对地基目标指向任务VYTEr)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0111.7.32",
+      "bits": "111.7.32",
+      "name_cn": "安全模式累计时间",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "1136975872",
+        "f_text": "393.75",
+        "f_double": 393.75,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0115.7.32",
+      "bits": "115.7.32",
+      "name_cn": "角动量x",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "936917244",
+        "f_text": "2.5775741960387677e-05",
+        "f_double": 2.5775741960387677e-05,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0119.7.32",
+      "bits": "119.7.32",
+      "name_cn": "角动量y",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3120953966",
+        "f_text": "-0.0005110864294692874",
+        "f_double": -0.0005110864294692874,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0123.7.32",
+      "bits": "123.7.32",
+      "name_cn": "角动量z",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3107979809",
+        "f_text": "-0.00018311339954379946",
+        "f_double": -0.00018311339954379946,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0127.7.32",
+      "bits": "127.7.32",
+      "name_cn": "角速度x",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3122843879",
+        "f_text": "-0.0006210938445292413",
+        "f_double": -0.0006210938445292413,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0131.7.32",
+      "bits": "131.7.32",
+      "name_cn": "角速度y",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "951395541",
+        "f_text": "8.637613063910976e-05",
+        "f_double": 8.637613063910976e-05,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0135.7.32",
+      "bits": "135.7.32",
+      "name_cn": "角速度z",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3103893424",
+        "f_text": "-0.00012364867143332958",
+        "f_double": -0.00012364867143332958,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0139.7.32",
+      "bits": "139.7.32",
+      "name_cn": "姿态四元数q0",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "1045966807",
+        "f_text": "0.21111999452114105",
+        "f_double": 0.21111999452114105,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0143.7.32",
+      "bits": "143.7.32",
+      "name_cn": "姿态四元数q1",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "1059900749",
+        "f_text": "0.6750076413154602",
+        "f_double": 0.6750076413154602,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0147.7.32",
+      "bits": "147.7.32",
+      "name_cn": "姿态四元数q2",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3203174626",
+        "f_text": "-0.4620428681373596",
+        "f_double": -0.4620428681373596,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0151.7.32",
+      "bits": "151.7.32",
+      "name_cn": "姿态四元数q3",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "1057553134",
+        "f_text": "0.5350788831710815",
+        "f_double": 0.5350788831710815,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0155.7.32",
+      "bits": "155.7.32",
+      "name_cn": "偏差四元数q0",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "1065353215",
+        "f_text": "0.9999999403953552",
+        "f_double": 0.9999999403953552,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0159.7.32",
+      "bits": "159.7.32",
+      "name_cn": "偏差四元数q1",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3108187103",
+        "f_text": "-0.00018612992425914854",
+        "f_double": -0.00018612992425914854,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0163.7.32",
+      "bits": "163.7.32",
+      "name_cn": "偏差四元数q2",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3107469246",
+        "f_text": "-0.0001756837300490588",
+        "f_double": -0.0001756837300490588,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0167.7.32",
+      "bits": "167.7.32",
+      "name_cn": "偏差四元数q3",
+      "data_type": "ieee754_binary32_be_observed",
+      "formula": "F=FX",
+      "unit": "",
+      "evidence": {
+        "x_text": "3104414095",
+        "f_text": "-0.00013122543168719858",
+        "f_double": -0.00013122543168719858,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "exact_raw_float32_pair"
+      }
+    },
+    {
+      "id": "OBC-CF0171.7.8",
+      "bits": "171.7.8",
+      "name_cn": "定姿方法标记",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "140",
+        "f_text": "140",
+        "f_double": 140,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0172.7.8",
+      "bits": "172.7.8",
+      "name_cn": "卫星姿态更新标志",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (保精度)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0173.7.8",
+      "bits": "173.7.8",
+      "name_cn": "卫星姿态可信标志",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (可信)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0174.7.16",
+      "bits": "174.7.16",
+      "name_cn": "GPS轨道有效计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "43404",
+        "f_text": "43404",
+        "f_double": 43404,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0176.7.8",
+      "bits": "176.7.8",
+      "name_cn": "使用GPS测量确定轨道",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "1",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0177.7.16",
+      "bits": "177.7.16",
+      "name_cn": "温度采集4-屏幕",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1194",
+        "f_text": "11.94",
+        "f_double": 11.94,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0179.7.16",
+      "bits": "179.7.16",
+      "name_cn": "温度采集6-储箱",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "3120",
+        "f_text": "31.2",
+        "f_double": 31.2,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0181.7.16",
+      "bits": "181.7.16",
+      "name_cn": "温度采集7-冯相机",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "2452",
+        "f_text": "24.52",
+        "f_double": 24.52,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0183.7.16",
+      "bits": "183.7.16",
+      "name_cn": "温度采集8-帆板",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "-2602",
+        "f_text": "-26.02",
+        "f_double": -26.02,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0185.7.8",
+      "bits": "185.7.8",
+      "name_cn": "X测控接收计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "78",
+        "f_text": "78",
+        "f_double": 78,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0186.7.1",
+      "bits": "186.7.1",
+      "name_cn": "X遥控帧同步锁定状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (失锁)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0186.6.1",
+      "bits": "186.6.1",
+      "name_cn": "X遥控码同步锁定状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (失锁)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0186.5.1",
+      "bits": "186.5.1",
+      "name_cn": "X遥控载波锁定状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (失锁)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0186.4.1",
+      "bits": "186.4.1",
+      "name_cn": "X上注帧同步锁定状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (失锁)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0186.3.1",
+      "bits": "186.3.1",
+      "name_cn": "X上注码同步锁定状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (失锁)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0186.2.1",
+      "bits": "186.2.1",
+      "name_cn": "X上注载波锁定状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (失锁)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0186.1.1",
+      "bits": "186.1.1",
+      "name_cn": "X上行工作模式",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (扩频)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0186.0.1",
+      "bits": "186.0.1",
+      "name_cn": "X发射机开关状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (开)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0187.7.1",
+      "bits": "187.7.1",
+      "name_cn": "网口状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (使能)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0187.6.1",
+      "bits": "187.6.1",
+      "name_cn": "发射机工作模式",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (测控)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0187.5.1",
+      "bits": "187.5.1",
+      "name_cn": "射频锁定状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (锁定)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0187.4.1",
+      "bits": "187.4.1",
+      "name_cn": "数传锁定状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0x0 (失锁)",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0187.1.1",
+      "bits": "187.1.1",
+      "name_cn": "数传速率",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (2Mbps)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0187.0.1",
+      "bits": "187.0.1",
+      "name_cn": "数据门状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "1",
+        "f_text": "0x1 (开)",
+        "f_double": 1,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0188.7.8",
+      "bits": "188.7.8",
+      "name_cn": "UV接收计数",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    },
+    {
+      "id": "OBC-CF0189.7.16",
+      "bits": "189.7.16",
+      "name_cn": "展开状态",
+      "data_type": "bits_signedness_and_conversion_unconfirmed",
+      "formula": "",
+      "unit": "",
+      "evidence": {
+        "x_text": "0",
+        "f_text": "0",
+        "f_double": 0,
+        "server_receive_time": "2026-10-25 15:03:36.240",
+        "conversion": "unknown_do_not_infer_from_one_value"
+      }
+    }
+  ]
+}

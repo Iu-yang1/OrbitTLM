@@ -7,6 +7,7 @@ namespace orbit {
 struct EngineeringField {
     QString code, bits, nameCn, nameEn, formula;
     QString rawHex, rawNumber, value, unit, status;
+    QString dataType, definitionEvidence;
 };
 struct BusinessPacket {
     ApplicationPacket transport;
@@ -14,6 +15,8 @@ struct BusinessPacket {
     int mainType=-1, subType=-1;
     int skippedFields=0;
     QVector<EngineeringField> fields;
+    QString definitionEvidence;
+    int fieldBaseKissOctet=-1;
 };
 struct BusinessStats {
     int recognized=0, unknown=0, decodedFields=0, unsupportedFields=0, truncatedFields=0;

@@ -10,6 +10,7 @@
 #include <QTemporaryDir>
 #include <QtEndian>
 #include <bit>
+#include <algorithm>
 using namespace orbit;
 namespace {
 QByteArray syntheticFrame(bool escaping=false) {
@@ -420,7 +421,7 @@ private slots:
     }
     void by04CcsdsSpacePacketGetsHeaderFieldsNotInventedEngineering(){
         QByteArray payload(192,char(0));
-        payload[0]=char(0x0f);payload[1]=char(0x12);
+        payload[0]=char(0x0e);payload[1]=char(0x12); // unsupported business subtype
         payload[2]=char(0x74);payload[3]=char(0x82);
         const QByteArray source=QByteArray::fromHex("08F0FBA100BF")+payload;
         QByteArray frame=QByteArray::fromHex("2054010100");
@@ -511,6 +512,78 @@ private slots:
         }
         QCOMPARE(crcPass,10);
         QCOMPARE(crcFail,1);
+    }
+    void by04RealBusinessCaptureAndUnknownFormulas(){
+        QFile fixture(QCoreApplication::applicationDirPath()+"/fixtures/by04_business_capture.b64");
+        QVERIFY(fixture.open(QIODevice::ReadOnly));
+        const auto raw=QByteArray::fromBase64(fixture.readAll());
+        QCOMPARE(raw.size(),6244);
+        QVector<Frame> frames;
+        for(int i=0;i<raw.size();i+=223)frames.push_back(Protocol::parse(raw.mid(i,223),"BY04"));
+        const auto packets=Transport::reassemble(frames);
+        const auto business=By04Decoder::decodeAll(packets);
+        int obc=0,buv=0,converted=0;
+        for(const auto &p:business){
+            if(p.identification!="by04_observed_layout_candidate")continue;
+            QCOMPARE(p.mainType,-1); // empirical APID mapping is not an official main type
+            QCOMPARE(p.fieldBaseKissOctet,7);
+            QCOMPARE(p.transport.integrity,QString("not_crc_verified"));
+            if(p.packetName=="BY04-OBC-SF"){++obc;QCOMPARE(p.fields.size(),220);}
+            if(p.packetName=="BY04-BUV-S0"){++buv;QCOMPARE(p.fields.size(),99);}
+            for(const auto &f:p.fields){
+                QVERIFY(f.unit.isEmpty());
+                if(f.status=="by04_observed_float32")++converted;
+                else {QVERIFY(f.formula.isEmpty());QCOMPARE(f.value,f.rawHex);}
+                // Do not turn this voltage ADC word into assumed V or mV.
+                if(f.code=="OBC-CF0044.7.16"){
+                    QCOMPARE(f.status,QString("raw_by04_conversion_unknown"));
+                    QVERIFY(f.dataType.contains("unconfirmed"));
+                }
+            }
+        }
+        QCOMPARE(obc,10);QCOMPARE(buv,11);QCOMPARE(converted,204);
+        // Real capture q0 is at KISS octet 7+139, not ASRTU SAT-S3 offset 12.
+        const auto it=std::find_if(business.cbegin(),business.cend(),[](const auto &p){
+            return p.packetName=="BY04-OBC-SF";
+        });
+        QVERIFY(it!=business.cend());
+        const auto q=std::find_if(it->fields.cbegin(),it->fields.cend(),[](const auto &f){
+            return f.code=="OBC-CF0139.7.32";
+        });
+        QVERIFY(q!=it->fields.cend());
+        QCOMPARE(q->bits,QString("139.7.32"));
+        QVERIFY(qAbs(q->value.toDouble()-0.21687696874141693)<1e-14);
+        QTemporaryDir temp;QString error;
+        QVERIFY(BusinessCatalog::exportJson(temp.filePath("by04.json"),{*it},&error));
+        QFile json(temp.filePath("by04.json"));QVERIFY(json.open(QIODevice::ReadOnly));
+        const auto saved=json.readAll();
+        QVERIFY(saved.contains("by04_observed_layout_candidate"));
+        QVERIFY(saved.contains("ieee754_binary32_be_observed"));
+        QVERIFY(saved.contains("field_base_kiss_octet"));
+        QVERIFY(BusinessCatalog::exportCsv(temp.filePath("by04.csv"),{*it},&error));
+        QFile csv(temp.filePath("by04.csv"));QVERIFY(csv.open(QIODevice::ReadOnly));
+        const auto rows=csv.readAll();
+        QVERIFY(rows.contains(QStringLiteral("姿态四元数q0").toUtf8()));
+        QVERIFY(rows.contains("by04_observed_float32"));
+    }
+    void by04ObservedLayoutRejectsWrongEnvelopeAndNonfinite(){
+        ApplicationPacket p;p.satellite="BY04";p.vcid=2;
+        p.bytes=QByteArray::fromHex("08f0c00100bf0f")+QByteArray(191,0);
+        QCOMPARE(By04Decoder::decode(p).identification,QString("by04_observed_layout_candidate"));
+        p.satellite="ASRTU-1";
+        QVERIFY(By04Decoder::decode(p).fields.isEmpty());
+        p.satellite="BY04";p.vcid=1;
+        QVERIFY(By04Decoder::decode(p).fields.isEmpty());
+        p.vcid=2;p.bytes[5]=char(0xbe);
+        QVERIFY(By04Decoder::decode(p).fields.isEmpty());
+        p.bytes[5]=char(0xbf);p.bytes[6]=char(14);
+        QVERIFY(By04Decoder::decode(p).fields.isEmpty());
+        p.bytes[6]=char(15);p.bytes.replace(146,4,QByteArray::fromHex("7fc00000"));
+        const auto decoded=By04Decoder::decode(p);
+        for(const auto &f:decoded.fields)if(f.code=="OBC-CF0139.7.32"){
+            QCOMPARE(f.status,QString("raw_by04_nonfinite_float"));
+            QCOMPARE(f.value,QString("7FC00000"));
+        }
     }
     void by04DoesNotMislabelAttitude(){
         Frame f=Protocol::parse(syntheticFrame(),"BY04");
