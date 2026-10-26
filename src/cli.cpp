@@ -7,6 +7,7 @@
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QTextStream>
 using namespace orbit;
 int main(int argc,char **argv){
@@ -18,7 +19,7 @@ int main(int argc,char **argv){
     args.addOptions({
         QCommandLineOption({"l","log"},"FEC LOG path","file"),
         QCommandLineOption({"b","bin"},"223-byte BIN path","file"),
-        QCommandLineOption({"s","satellite"},"ASRTU-1 or BY04 (8104)","name","ASRTU-1"),
+        QCommandLineOption({"s","satellite"},"AUTO, ASRTU-1 or BY04 (8104)","name","AUTO"),
         QCommandLineOption({"p","profile"},"Optional engineering rules JSON","file"),
         QCommandLineOption("json","Write full ordered JSON","file"),
         QCommandLineOption("packets-json","Write reassembled KISS packets with unverified application integrity","file"),
@@ -33,8 +34,8 @@ int main(int argc,char **argv){
     args.process(app);
     QTextStream out(stdout),err(stderr);
     const QString sat=args.value("satellite");
-    if(sat!="ASRTU-1"&&sat!="BY04"){
-        err<<"ERROR: satellite must be ASRTU-1 or BY04\n";return 2;
+    if(sat!="AUTO"&&sat!="ASRTU-1"&&sat!="BY04"){
+        err<<"ERROR: satellite must be AUTO, ASRTU-1 or BY04\n";return 2;
     }
     if(!args.isSet("log")&&!args.isSet("bin")){
         err<<"ERROR: pass --log and/or --bin\n";return 2;
@@ -51,7 +52,7 @@ int main(int argc,char **argv){
         if(!schema.load(args.value("profile"),&reason)){
             err<<"Schema: "<<reason<<"\n";return 4;
         }
-        if(schema.satellite()!=sat){
+        if(sat!="AUTO"&&schema.satellite()!=sat){
             err<<"Schema satellite mismatch\n";return 4;
         }
         for(auto &f:frames)schema.apply(f);
@@ -64,26 +65,13 @@ int main(int argc,char **argv){
     }
     QVector<BusinessPacket> business;
     BusinessStats bs;
-    if(sat=="ASRTU-1"){
-        BusinessCatalog catalog;
-        if(!catalog.loadDirectory(QCoreApplication::applicationDirPath()+
-             "/protocols/asrtu1",&reason)){
-            err<<"ASRTU-1 catalog: "<<reason<<"\n";return 8;
-        }
-        business=catalog.decodeAll(packets,&bs);
-        if(args.isSet("telemetry-json") &&
-           !BusinessCatalog::exportJson(args.value("telemetry-json"),business,&reason)){
-            err<<"Telemetry JSON: "<<reason<<"\n";return 8;
-        }
-        if(args.isSet("telemetry-csv") &&
-           !BusinessCatalog::exportCsv(args.value("telemetry-csv"),business,&reason)){
-            err<<"Telemetry CSV: "<<reason<<"\n";return 8;
-        }
-        if(args.isSet("quaternion-csv") &&
-           !BusinessCatalog::exportQuaternionCsv(args.value("quaternion-csv"),business,&reason)){
-            err<<"SAT-S3 quaternion CSV: "<<reason<<"\n";return 8;
-        }
-    }else if(sat=="BY04"){
+    BusinessCatalog catalog;
+    if(sat!="BY04" && !catalog.loadDirectory(QCoreApplication::applicationDirPath()+"/protocols/asrtu1",&reason)){
+        err<<"ASRTU-1 catalog: "<<reason<<"\n";return 8;
+    }
+    if(sat=="AUTO")business=catalog.decodeBySatellite(packets,&bs);
+    else if(sat=="ASRTU-1")business=catalog.decodeAll(packets,&bs);
+    else {
         business=By04Decoder::decodeAll(packets);
         for(const auto &item:business){
             if(item.identification=="by04_kiss_envelope")++bs.recognized;
@@ -93,24 +81,19 @@ int main(int argc,char **argv){
                 else if(f.status.startsWith("raw_"))++bs.unsupportedFields;
             }
         }
-        if(args.isSet("quaternion-csv")){
-            if(!BusinessCatalog::exportQuaternionCsv(args.value("quaternion-csv"),business,&reason)){
-                err<<"BY04 quaternion CSV: "<<reason<<"\n";return 8;
-            }
-        }
-        if(args.isSet("telemetry-json") &&
-           !BusinessCatalog::exportJson(args.value("telemetry-json"),business,&reason)){
-            err<<"BY04 telemetry JSON: "<<reason<<"\n";return 8;
-        }
-        if(args.isSet("telemetry-csv") &&
-           !BusinessCatalog::exportCsv(args.value("telemetry-csv"),business,&reason)){
-            err<<"BY04 telemetry CSV: "<<reason<<"\n";return 8;
-        }
-        if(args.isSet("by04-ssdv-bin")){
-            const auto imagePackets=By04Decoder::images(frames);
-            if(!ImageTools::savePackets(imagePackets,args.value("by04-ssdv-bin"),&reason)){
-                err<<"BY04 DSLWP SSDV: "<<reason<<"\n";return 8;
-            }
+    }
+    if(args.isSet("telemetry-json")&&!BusinessCatalog::exportJson(args.value("telemetry-json"),business,&reason)){
+        err<<"Telemetry JSON: "<<reason<<"\n";return 8;
+    }
+    if(args.isSet("telemetry-csv")&&!BusinessCatalog::exportCsv(args.value("telemetry-csv"),business,&reason)){
+        err<<"Telemetry CSV: "<<reason<<"\n";return 8;
+    }
+    if(args.isSet("quaternion-csv")&&!BusinessCatalog::exportQuaternionCsv(args.value("quaternion-csv"),business,&reason)){
+        err<<"Quaternion CSV: "<<reason<<"\n";return 8;
+    }
+    if(args.isSet("by04-ssdv-bin")&&(sat=="AUTO"||sat=="BY04")){
+        if(!ImageTools::savePackets(By04Decoder::images(frames),args.value("by04-ssdv-bin"),&reason)){
+            err<<"BY04 DSLWP SSDV: "<<reason<<"\n";return 8;
         }
     }
     if(args.isSet("sqlite")){
@@ -130,8 +113,14 @@ int main(int argc,char **argv){
        !Protocol::exportAttitudeCsv(args.value("candidate-quaternion-csv"),frames,&reason)){
         err<<"Experimental quaternion: "<<reason<<"\n";return 6;
     }
+    QJsonArray detected;
+    QStringList names;int unidentified=0;
+    for(const auto &f:frames){
+        if(f.satellite=="UNKNOWN")++unidentified;
+        else if(!names.contains(f.satellite)){names<<f.satellite;detected.append(f.satellite);}
+    }
     const QJsonObject result{
-        {"satellite",sat},{"log_observations",stats.logObservations},
+        {"satellite",sat},{"detected_satellites",detected},{"unidentified_frames",unidentified},{"log_observations",stats.logObservations},
         {"bin_blocks",stats.binBlocks},{"unique_frames",stats.unique},
         {"log_fec_reported",stats.trustedFromLog},
         {"structural_only",stats.structuralOnly},
@@ -144,7 +133,7 @@ int main(int argc,char **argv){
         {"engineering_fields_out_of_range",bs.truncatedFields},
         {"application_interrupted_by_gap",packetStats.interruptedByCounterGap},
         {"application_incomplete_at_eof",packetStats.incompleteAtEof},
-        {"by04_layout_status",sat=="BY04"?"by04_reference_catalog":"not_applicable"},
+        {"by04_layout_status",names.contains("BY04")?"by04_reference_catalog":"not_applicable"},
         {"note","223 bytes = 5-byte TM header + 218-byte data region; BY04 VC1 is native SSDV, VC0/2 use KISS; application CRC not verified"}
     };
     out<<QString::fromUtf8(QJsonDocument(result).toJson(QJsonDocument::Indented));

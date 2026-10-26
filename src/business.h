@@ -30,6 +30,8 @@ public:
     BusinessPacket decode(const ApplicationPacket &packet) const;
     QVector<BusinessPacket> decodeAll(const QVector<ApplicationPacket> &packets,
                                       BusinessStats *stats=nullptr) const;
+    QVector<BusinessPacket> decodeBySatellite(const QVector<ApplicationPacket> &packets,
+                                             BusinessStats *stats=nullptr) const;
     static QJsonObject toJson(const BusinessPacket &packet);
     static EngineeringField decodeField(const QJsonObject &definition,const QByteArray &payload);
     static void orderForReplay(QVector<BusinessPacket> &packets);

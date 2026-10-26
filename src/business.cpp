@@ -1,4 +1,5 @@
 #include "business.h"
+#include "by04.h"
 #include <QDir>
 #include <QFile>
 #include <QJsonArray>
@@ -306,6 +307,27 @@ QVector<BusinessPacket> BusinessCatalog::decodeAll(const QVector<ApplicationPack
     if(stats)*stats=counts;
     return decoded;
 }
+QVector<BusinessPacket> BusinessCatalog::decodeBySatellite(const QVector<ApplicationPacket> &packets,
+                                                        BusinessStats *stats)const{
+    QVector<BusinessPacket> decoded;QVector<ApplicationPacket> by04;
+    for(const auto &p:packets){
+        if(p.satellite=="BY04")by04.push_back(p);
+        else if(p.satellite=="ASRTU-1")decoded.push_back(decode(p));
+        else {BusinessPacket unknown;unknown.transport=p;unknown.identification="unknown_satellite";decoded.push_back(unknown);}
+    }
+    decoded+=By04Decoder::decodeAll(by04);orderForReplay(decoded);
+    BusinessStats counts;
+    for(const auto &p:decoded){
+        if(p.packetName.isEmpty()||p.identification=="by04_ccsds_header_only")++counts.unknown;
+        else ++counts.recognized;
+        counts.truncatedFields+=p.skippedFields;
+        for(const auto &f:p.fields){
+            if(f.status.startsWith("raw_"))++counts.unsupportedFields;
+            if(p.transport.satellite=="ASRTU-1"||f.status.startsWith("table_")||f.status=="reference_formula")++counts.decodedFields;
+        }
+    }
+    if(stats)*stats=counts;return decoded;
+}
 void BusinessCatalog::orderForReplay(QVector<BusinessPacket> &packets){
     // Source order anchors untimed BIN fragments between their neighboring LOG records.
     const bool ordered=std::all_of(packets.cbegin(),packets.cend(),[](const auto &p){return p.transport.replayOrder>=0;});
@@ -323,7 +345,7 @@ QJsonObject BusinessCatalog::toJson(const BusinessPacket &packet){
     for(const auto &f:packet.fields)fields.append(fieldJson(f));
     for(const auto &s:packet.transport.sources)sources.append(s);
     return {
-        {"packet",packet.packetName},{"packet_label",packet.packetLabel},
+        {"packet",packet.packetName},{"packet_label",packet.packetLabel},{"satellite",packet.transport.satellite},
         {"main_type",packet.mainType},{"sub_type",packet.subType},
         {"ccsds_apid",packet.transport.apid},
         {"ccsds_packet_sequence",packet.transport.sequence},

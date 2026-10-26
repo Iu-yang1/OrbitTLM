@@ -30,6 +30,7 @@ struct Stats {
 };
 class Protocol {
 public:
+    static QString detectSatellite(const QByteArray &raw);
     static Frame parse(const QByteArray &raw, const QString &satellite);
     static QVector<Frame> fromLog(const QString &path,const QString &satellite,QString *error=nullptr);
     static QVector<Frame> fromBin(const QString &path,const QString &satellite,QString *error=nullptr);
@@ -54,16 +55,22 @@ private:
 class LiveTcp final : public QObject {
     Q_OBJECT
 public:
+    enum class ConnectionState {Disconnected,Connecting,Connected,Failed};
+    Q_ENUM(ConnectionState)
     explicit LiveTcp(QObject *parent=nullptr);
+    ConnectionState connectionState() const {return state_;}
     void start(const QString &host,quint16 port,const QString &satellite);
     void stop();
 signals:
     void received(const orbit::Frame &frame);
     void status(const QString &message);
+    void connectionStateChanged(orbit::LiveTcp::ConnectionState state,const QString &detail);
 private:
+    void setConnectionState(ConnectionState state,const QString &detail);
     QTcpSocket socket_;
     QByteArray queued_;
-    QString satellite_ = "ASRTU-1";
+    QString satellite_ = "AUTO",endpoint_,connectionId_;
+    ConnectionState state_=ConnectionState::Disconnected;
 };
 }
 Q_DECLARE_METATYPE(orbit::Frame)

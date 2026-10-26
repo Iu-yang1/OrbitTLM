@@ -26,12 +26,14 @@ class QSpinBox;
 class QProgressBar;
 class QStackedWidget;
 class QFrame;
+class QAction;
 class AttitudeWidget;
 class ImagePreview;
 class MainWindow final : public QMainWindow {
 public:
     explicit MainWindow(QWidget *parent=nullptr);
     bool openSession(const QString &log,const QString &bin,const QString &satellite,QString *error=nullptr);
+    void connectTcp(const QString &host,quint16 port);
 private:
     void buildMenus();
     void buildToolbar();
@@ -77,6 +79,7 @@ private:
     const orbit::BusinessPacket *latestRecognized(int index,const QStringList &prefixes) const;
     void updateFieldCard(QGroupBox *card,const QStringList &prefixes,int index);
     void setDiagnosticsVisible(bool enabled);
+    void updateTcpStatus(orbit::LiveTcp::ConnectionState state,const QString &detail);
 
     QString logPath_,binPath_;
     orbit::Database db_;
@@ -92,6 +95,7 @@ private:
     QVector<orbit::ImagePacket> images_;
     QPixmap decodedImage_;
     QString imagePath_;
+    QString imageSatellite_;
     int currentIndex_=-1;
     QLabel *sourceLabel_=nullptr,*message_=nullptr,*currentTitle_=nullptr,
            *currentMeta_=nullptr,*integrityLabel_=nullptr,*frameMetric_=nullptr,
@@ -100,6 +104,8 @@ private:
            *engineeringSummary_=nullptr,*fieldDetail_=nullptr,*attitudeInfo_=nullptr,
            *imageInfo_=nullptr,*diagnosticsSummary_=nullptr;
     QComboBox *satelliteSelect_=nullptr,*speedSelect_=nullptr;
+    QLabel *tcpStatus_=nullptr;
+    QAction *connectTcpAction_=nullptr,*disconnectTcpAction_=nullptr;
     QLineEdit *eventSearch_=nullptr,*engineeringSearch_=nullptr;
     QCheckBox *recognizedOnly_=nullptr;
     QTableWidget *eventTable_=nullptr,*engineeringTable_=nullptr,

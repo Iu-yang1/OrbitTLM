@@ -13,6 +13,9 @@
 #include <QChartView>
 #include <QChart>
 #include <QLineSeries>
+#include <QComboBox>
+#include <QAction>
+#include <QTcpServer>
 #include <QLineEdit>
 #include <QStandardPaths>
 
@@ -167,6 +170,70 @@ private slots:
             search->clear();QApplication::processEvents();
             if(!repeat)window.grab().save(QApplication::applicationDirPath()+"/OrbitTLM-ASRTU-fixed.png");
         }
+    }
+    void automaticMixedSessionKeepsCorrectFieldCatalog(){
+        const QString app=QApplication::applicationDirPath();
+        QFile a(app+"/fixtures/asrtu_capture_20261024.b64"),b(app+"/fixtures/by04_business_capture.b64");
+        QFile images(app+"/fixtures/by04_ssdv_bad_packet.b64");QVERIFY(images.open(QIODevice::ReadOnly));
+        QVERIFY(a.open(QIODevice::ReadOnly));QVERIFY(b.open(QIODevice::ReadOnly));
+        QTemporaryDir temp;const auto path=temp.filePath("mixed.bin");QFile file(path);
+        const auto asrtuRaw=QByteArray::fromBase64(a.readAll());
+        QVERIFY(file.open(QIODevice::WriteOnly));file.write(asrtuRaw+QByteArray::fromBase64(b.readAll())+QByteArray::fromBase64(images.readAll()));file.close();
+        MainWindow window;QString error;window.show();
+        auto *mode=window.findChild<QComboBox*>("satelliteMode");QVERIFY(mode);
+        QCOMPARE(mode->currentData().toString(),QString("AUTO"));
+        QVERIFY(window.openSession(app+"/fixtures/asrtu_capture_20261024_fec.txt",path,"AUTO",&error));
+        QCOMPARE(mode->currentData().toString(),QString("AUTO"));
+        QVERIFY(mode->currentText().contains(QStringLiteral("混合")));
+        auto *events=window.findChild<QTableWidget*>("eventTimeline");QVERIFY(events);
+        auto *fields=window.findChild<QTreeWidget*>("engineeringFields");QVERIFY(fields);
+        auto *pages=window.findChild<QTabBar*>("workspaceNavigation");QVERIFY(pages);pages->setCurrentIndex(1);
+        auto *imagePackets=window.findChild<QTableWidget*>("imagePackets");QVERIFY(imagePackets);
+        int asrtu=-1,by04=-1;
+        for(int i=0;i<events->rowCount();++i){
+            if(events->item(i,1)->text().contains("SAT-S0"))asrtu=i;
+            if(events->item(i,1)->text()==QStringLiteral("计算机 · 关键遥测"))by04=i;
+        }
+        QVERIFY(asrtu>=0&&by04>=0);events->selectRow(by04);
+        auto q=fields->findItems(QStringLiteral("姿态四元数q0"),Qt::MatchExactly|Qt::MatchRecursive);
+        QCOMPARE(imagePackets->rowCount(),11);
+        QCOMPARE(q.size(),1);QVERIFY(q[0]->data(0,Qt::UserRole).toString().startsWith("OBC-CF"));
+        events->selectRow(asrtu);
+        QCOMPARE(imagePackets->rowCount(),0);
+        QCOMPARE(fields->findItems(QStringLiteral("3.3V温度"),Qt::MatchExactly|Qt::MatchRecursive).size(),1);
+        QVERIFY(fields->findItems(QStringLiteral("姿态四元数q0"),Qt::MatchExactly|Qt::MatchRecursive).isEmpty());
+        QApplication::processEvents();window.grab().save(app+"/OrbitTLM-AUTO-mixed.png");
+        auto unknown=asrtuRaw.left(223);unknown[0]=char(0x12);unknown[1]=char(0x34);
+        const auto unknownPath=temp.filePath("unknown.bin");QFile other(unknownPath);
+        QVERIFY(other.open(QIODevice::WriteOnly));other.write(unknown);other.close();
+        QVERIFY(window.openSession({},unknownPath,"AUTO",&error));
+        QVERIFY(mode->currentText().contains(QStringLiteral("未识别")));
+        QCOMPARE(events->rowCount(),0);QCOMPARE(fields->topLevelItemCount(),0);
+    }
+    void tcpBadgePersistsAcrossReceivedFramesAndErrors(){
+        QTcpServer server;QVERIFY(server.listen(QHostAddress::LocalHost,0));
+        MainWindow window;window.show();
+        auto *badge=window.findChild<QLabel*>("tcpStatus");QVERIFY(badge);
+        auto *connect=window.findChild<QAction*>("connectTcpAction");QVERIFY(connect);
+        auto *disconnect=window.findChild<QAction*>("disconnectTcpAction");QVERIFY(disconnect);
+        QVERIFY(badge->text().contains(QStringLiteral("未连接")));QVERIFY(connect->isEnabled());QVERIFY(!disconnect->isEnabled());
+        window.connectTcp("127.0.0.1",server.serverPort());
+        QTRY_VERIFY(badge->text().contains(QStringLiteral("已连接")));
+        QVERIFY(!connect->isEnabled());QVERIFY(disconnect->isEnabled());QVERIFY(!badge->toolTip().isEmpty());
+        QTRY_VERIFY(server.hasPendingConnections());auto *peer=server.nextPendingConnection();QVERIFY(peer);
+        QFile fixture(QApplication::applicationDirPath()+"/fixtures/asrtu_capture_20261024.b64");QVERIFY(fixture.open(QIODevice::ReadOnly));
+        const auto frame=QByteArray::fromBase64(fixture.readAll()).left(223);
+        peer->write(frame.left(40));peer->flush();QTest::qWait(20);
+        auto *events=window.findChild<QTableWidget*>("eventTimeline");QVERIFY(events);QCOMPARE(events->rowCount(),0);
+        peer->write(frame.mid(40));peer->flush();QTRY_VERIFY(events->rowCount()>0);
+        QVERIFY(badge->text().contains(QStringLiteral("已连接")));
+        auto *mode=window.findChild<QComboBox*>("satelliteMode");QVERIFY(mode);
+        QCOMPARE(mode->currentData().toString(),QString("AUTO"));QVERIFY(mode->currentText().contains("ASRTU-1"));
+        QApplication::processEvents();window.grab().save(QApplication::applicationDirPath()+"/OrbitTLM-TCP-connected.png");
+        disconnect->trigger();QTRY_VERIFY(badge->text().contains(QStringLiteral("未连接")));
+        const auto port=server.serverPort();server.close();window.connectTcp("127.0.0.1",port);
+        QTRY_VERIFY(badge->text().contains(QStringLiteral("连接失败")));QVERIFY(connect->isEnabled());
+        QVERIFY(!badge->toolTip().isEmpty());
     }
 };
 QTEST_MAIN(UiSmoke)

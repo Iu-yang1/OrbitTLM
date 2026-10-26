@@ -2,6 +2,7 @@
 #include "mainwindow_widgets.h"
 #include "by04.h"
 #include <QApplication>
+#include <QAction>
 #include <QChart>
 #include <QChartView>
 #include <QCheckBox>
@@ -101,7 +102,28 @@ QTableWidgetItem *item(const QString &text,const QString &tooltip={}){
 }
 }
 QString MainWindow::satellite() const{
+    if(currentIndex_>=0&&currentIndex_<business_.size()){
+        const auto &sat=business_[currentIndex_].transport.satellite;
+        if(sat=="ASRTU-1"||sat=="BY04")return sat;
+    }
+    for(const auto &f:frames_)if(f.satellite=="ASRTU-1"||f.satellite=="BY04")return f.satellite;
     return satelliteSelect_?satelliteSelect_->currentData().toString():"ASRTU-1";
+}
+void MainWindow::connectTcp(const QString &host,quint16 port){
+    live_->start(host,port,satelliteSelect_->currentData().toString());
+}
+void MainWindow::updateTcpStatus(orbit::LiveTcp::ConnectionState state,const QString &detail){
+    using State=orbit::LiveTcp::ConnectionState;
+    QString label=QStringLiteral("未连接"),color="#59636e";
+    if(state==State::Connecting){label=QStringLiteral("连接中");color="#9a6700";}
+    else if(state==State::Connected){label=QStringLiteral("已连接");color="#1a7f37";}
+    else if(state==State::Failed){label=QStringLiteral("连接失败");color="#cf222e";}
+    tcpStatus_->setText(QStringLiteral("TCP · ")+label);tcpStatus_->setToolTip(detail);
+    tcpStatus_->setStyleSheet(QStringLiteral("color:%1;font-size:12px;").arg(color));
+    connectTcpAction_->setEnabled(state!=State::Connecting&&state!=State::Connected);
+    disconnectTcpAction_->setEnabled(state==State::Connecting||state==State::Connected);
+    satelliteSelect_->setEnabled(state!=State::Connecting&&state!=State::Connected);
+    statusBar()->showMessage(QStringLiteral("TCP ")+label+(detail.isEmpty()?QString():" · "+detail),5000);
 }
 QString MainWindow::qualityLabel(const QString &value) const{
     if(value=="log_fec_reported")return QStringLiteral("日志报告 FEC 成功");
@@ -176,12 +198,12 @@ void MainWindow::importSession(){
         return;
     }
     QString error;
-    if(!openSession(logPath_,binPath_,satellite(),&error))
+    if(!openSession(logPath_,binPath_,satelliteSelect_->currentData().toString(),&error))
         QMessageBox::warning(this,QStringLiteral("导入失败"),error);
 }
 bool MainWindow::openSession(const QString &logPath,const QString &binPath,const QString &sat,QString *failure){
     QString error;
-    if((sat!="BY04"&&sat!="ASRTU-1") || (logPath.isEmpty()&&binPath.isEmpty())){
+    if((sat!="AUTO"&&sat!="BY04"&&sat!="ASRTU-1") || (logPath.isEmpty()&&binPath.isEmpty())){
         if(failure)*failure=QStringLiteral("请选择卫星和数据文件");return false;
     }
     auto log=logPath.isEmpty()?QVector<orbit::Frame>{}:orbit::Protocol::fromLog(logPath,sat,&error);
@@ -192,7 +214,8 @@ bool MainWindow::openSession(const QString &logPath,const QString &binPath,const
     satelliteSelect_->setCurrentIndex(satelliteSelect_->findData(sat));
     updatePaths();
     frames_=orbit::Protocol::fuse(log,bin,&frameStats_);
-    if(hasCustomSchema_&&customSchema_.satellite()==sat)
+    imageSatellite_.clear();
+    if(hasCustomSchema_&&(sat=="AUTO"||customSchema_.satellite()==sat))
         for(auto &f:frames_)customSchema_.apply(f);
     rebuildSession();
     if(!db_.save(sat+QStringLiteral(" · LOG/BIN 离线会话"),frames_,&error))
@@ -217,11 +240,15 @@ void MainWindow::loadHistory(){
     const int i=choices.indexOf(selected);
     frames_=db_.load(entries[i].first,&error);
     if(!error.isEmpty()){QMessageBox::warning(this,QStringLiteral("历史会话读取失败"),error);return;}
-    if(!frames_.isEmpty()){
-        const QString sat=frames_.first().satellite;
-        for(int j=0;j<satelliteSelect_->count();++j)
-            if(satelliteSelect_->itemData(j).toString()==sat)satelliteSelect_->setCurrentIndex(j);
+    satelliteSelect_->setCurrentIndex(satelliteSelect_->findData("AUTO"));
+    for(auto &f:frames_){
+        const auto parsed=orbit::Protocol::parse(f.bytes,"AUTO");
+        if(f.satellite!=parsed.satellite){
+            f.satellite=parsed.satellite;f.payload=parsed.payload;f.apid=parsed.apid;f.sequence=parsed.sequence;
+            f.fields=parsed.fields;
+        }
     }
+    imageSatellite_.clear();
     frameStats_={};
     frameStats_.unique=frames_.size();
     for(const auto &f:frames_){
@@ -237,12 +264,7 @@ void MainWindow::rebuildSession(){
     timer_->stop();
     packets_=orbit::Transport::reassemble(frames_,&transportStats_);
     orbit::BusinessStats bs;
-    business_=catalogReady_&&satellite()=="ASRTU-1"?
-        catalog_.decodeAll(packets_,&bs):
-        (satellite()=="BY04"?orbit::By04Decoder::decodeAll(packets_):
-                             QVector<BusinessPacket>{});
-    // BY04 headers are decoded independently; its physical engineering field
-    // maps must not be borrowed from the ASRTU-1 catalog.
+    business_=catalog_.decodeBySatellite(packets_,&bs);
     if(business_.isEmpty()&&!packets_.isEmpty()){
         business_.reserve(packets_.size());
         for(const auto &p:packets_){
@@ -251,6 +273,7 @@ void MainWindow::rebuildSession(){
             business_.push_back(event);
         }
     }
+    currentIndex_=-1;
     populateEvents();
     updateFrameList();
     scanSsdv();
@@ -304,6 +327,7 @@ void MainWindow::applyEventFilter(){
 void MainWindow::selectEvent(int index){
     if(index<0||index>=business_.size()){showEvent(-1);return;}
     currentIndex_=index;
+    if(imageSatellite_!=satellite())scanSsdv();
     {
         QSignalBlocker block(eventTable_);
         eventTable_->selectRow(index);
@@ -331,6 +355,16 @@ void MainWindow::showEvent(int index){
     updateRawPacket(index);
 }
 void MainWindow::updateMetrics(){
+    QStringList detected;int unidentified=0;
+    for(const auto &f:frames_){
+        if(f.satellite=="UNKNOWN")++unidentified;
+        if((f.satellite=="ASRTU-1"||f.satellite=="BY04")&&!detected.contains(f.satellite))detected<<f.satellite;
+    }
+    const int automatic=satelliteSelect_->findData("AUTO");
+    satelliteSelect_->setItemText(automatic,detected.isEmpty()?
+        (frames_.isEmpty()?QStringLiteral("自动识别"):QStringLiteral("自动 · 未识别")):
+        (detected.size()>1?QStringLiteral("自动 · 混合"):QStringLiteral("自动 · ")+detected.first()));
+    satelliteSelect_->setItemData(automatic,QStringLiteral("SCID 0x032 = ASRTU-1；0x205 = BY04\n")+detected.join(" / "),Qt::ToolTipRole);
     QDateTime earliest,latest;
     for(const auto &f:frames_)if(f.captureLocal.isValid()){
         if(!earliest.isValid()||f.captureLocal<earliest)earliest=f.captureLocal;
@@ -345,27 +379,21 @@ void MainWindow::updateMetrics(){
     int good=0;
     for(const auto &p:business_)
         if(recognizedBusiness(p))++good;
-    const bool by04=satellite()=="BY04";
-    recognizedOnly_->setText(by04?QStringLiteral("仅显示已识别数据"):
-                                  QStringLiteral("仅显示已识别数据"));
+    recognizedOnly_->setText(QStringLiteral("仅显示已识别数据"));
     auto label=[](QLabel *value){
         return value->parentWidget()->findChild<QLabel*>("subtitle");
     };
     if(auto *caption=label(recognizedMetric_))
-        caption->setText(by04?QStringLiteral("已识别业务包"):
-                             QStringLiteral("已识别业务包"));
+        caption->setText(QStringLiteral("已识别业务包"));
     if(auto *caption=label(unknownMetric_))
-        caption->setText(by04?QStringLiteral("未分类 KISS 业务包"):
-                             QStringLiteral("未识别业务包"));
+        caption->setText(QStringLiteral("未识别业务包"));
     recognizedMetric_->setText(QString::number(good));
     unknownMetric_->setText(QString::number(business_.size()-good));
     imageMetric_->setText(QString::number(images_.size()));
     transportMetric_->setText(QStringLiteral("%1 包").arg(packets_.size()));
-    message_->setText(satellite()=="BY04"?
-        QStringLiteral("BY04 · %1 包 · 图像 %2")
-            .arg(packets_.size()).arg(images_.size()):
-        QStringLiteral("%1 包 · 已识别 %2 · 未识别 %3")
+    message_->setText(QStringLiteral("%1 包 · 已识别 %2 · 未识别 %3")
             .arg(packets_.size()).arg(good).arg(business_.size()-good));
+    if(unidentified)message_->setText(message_->text()+QStringLiteral(" · 未识别帧 %1").arg(unidentified));
 }
 void MainWindow::updateOverview(int index){
     if(index<0||index>=business_.size()){
@@ -686,10 +714,17 @@ void MainWindow::setDiagnosticsVisible(bool visible){
 void MainWindow::scanSsdv(){
     if(!imageApid_)return;
     const bool by04=satellite()=="BY04";
+    imageSatellite_=satellite();
+    QVector<orbit::ApplicationPacket> asrtu;
+    for(const auto &p:packets_)if(p.satellite=="ASRTU-1")asrtu.push_back(p);
     images_=by04?orbit::By04Decoder::images(frames_):
-                 orbit::ImageTools::candidatesFromKiss(packets_,imageApid_->value());
+                 orbit::ImageTools::candidatesFromKiss(asrtu,imageApid_->value());
     imageApid_->setEnabled(!by04);
     imageTable_->setRowCount(images_.size());
+    if(imageMetric_){
+        imageMetric_->setText(QString::number(images_.size()));
+        imageMetric_->setToolTip(QStringLiteral("当前图像来源：")+imageSatellite_);
+    }
     for(int i=0;i<images_.size();++i){
         const auto &p=images_[i];
         const QStringList row={QString::number(p.imageId),

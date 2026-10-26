@@ -9,6 +9,9 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QTcpServer>
+#include <QSignalSpy>
+#include <QProcess>
 #include <QTemporaryDir>
 #include <QtEndian>
 #include <bit>
@@ -638,6 +641,10 @@ private slots:
         b.replace(0,5,QByteArray::fromHex("2054020200"));b[222]=char(0xc0);
         QVERIFY(Transport::reassemble({Protocol::parse(a,"ASRTU-1"),
                                        Protocol::parse(b,"ASRTU-1")}).isEmpty());
+        b[0]=a[0];b[1]=a[1];
+        auto oldConnection=Protocol::parse(a,"ASRTU-1"),newConnection=Protocol::parse(b,"ASRTU-1");
+        oldConnection.sources={"live:tcp:old"};newConnection.sources={"live:tcp:new"};
+        QVERIFY(Transport::reassemble({oldConnection,newConnection}).isEmpty());
     }
     void by04SegmentedSpacePacketsKeepOriginalBlocks(){
         auto block=[](int flag,int seq,const QByteArray &body){
@@ -758,6 +765,81 @@ private slots:
         d["formula"]="F=X";d["bits"]="0.7.16";
         f=BusinessCatalog::decodeField(d,QByteArray::fromHex("1acd"));
         QCOMPARE(f.value,QString("1ACD"));QCOMPARE(f.status,QString("table_raw_hex"));
+    }
+    void autoSatelliteUsesScidForEveryVirtualChannel(){
+        for(int vc=0;vc<8;++vc){
+            QByteArray by04(223,char(0xaa)),asrtu=by04;
+            by04[0]=char(0x20);by04[1]=char(0x50|(vc<<1));
+            asrtu[0]=char(0x03);asrtu[1]=char(0x20|(vc<<1));
+            QCOMPARE(Protocol::detectSatellite(by04),QString("BY04"));
+            QCOMPARE(Protocol::detectSatellite(asrtu),QString("ASRTU-1"));
+            QCOMPARE(Protocol::parse(by04,"AUTO").satellite,QString("BY04"));
+            QCOMPARE(Protocol::parse(asrtu,"AUTO").satellite,QString("ASRTU-1"));
+        }
+        QByteArray unknown=syntheticFrame();unknown[0]=char(0x12);unknown[1]=char(0x34);
+        const auto f=Protocol::parse(unknown,"AUTO");
+        QCOMPARE(f.satellite,QString("UNKNOWN"));QVERIFY(Transport::reassemble({f}).isEmpty());
+        QCOMPARE(Protocol::detectSatellite(QByteArray(2,0)),QString("UNKNOWN"));
+        unknown[0]=char(0x43);QCOMPARE(Protocol::detectSatellite(unknown),QString("UNKNOWN"));
+    }
+    void mixedCaptureAndDefaultCliDispatchBySatellite(){
+        const QString app=QCoreApplication::applicationDirPath();
+        QFile a(app+"/fixtures/asrtu_capture_20261024.b64"),b(app+"/fixtures/by04_business_capture.b64");
+        QVERIFY(a.open(QIODevice::ReadOnly));QVERIFY(b.open(QIODevice::ReadOnly));
+        const auto raw=QByteArray::fromBase64(a.readAll())+QByteArray::fromBase64(b.readAll());
+        QTemporaryDir temp;const auto path=temp.filePath("mixed.bin");QFile file(path);
+        QVERIFY(file.open(QIODevice::WriteOnly));file.write(raw);file.close();
+        const auto frames=Protocol::fromBin(path,"AUTO");QCOMPARE(frames.size(),109);
+        int asrtu=0,by04=0,unknown=0;
+        for(const auto &f:frames){if(f.satellite=="BY04")++by04;else if(f.satellite=="ASRTU-1")++asrtu;else ++unknown;}
+        QCOMPARE(asrtu,81);QCOMPARE(by04,27);QCOMPARE(unknown,1);
+        BusinessCatalog catalog;QString error;QVERIFY(catalog.loadDirectory(app+"/protocols/asrtu1",&error));
+        BusinessStats stats;const auto decoded=catalog.decodeBySatellite(Transport::reassemble(frames),&stats);
+        QCOMPARE(stats.recognized,99);QCOMPARE(decoded.size(),125);
+        int sat3=0,obc=0;
+        for(const auto &p:decoded){
+            if(p.packetName=="SAT-S3"){++sat3;QCOMPARE(p.transport.satellite,QString("ASRTU-1"));}
+            if(p.packetName=="BY04-OBC-SF"){++obc;QCOMPARE(p.transport.satellite,QString("BY04"));}
+        }
+        QCOMPARE(sat3,13);QCOMPARE(obc,10);
+        QProcess cli;
+#ifdef Q_OS_WIN
+        const QString executable=app+"/OrbitTLM-cli.exe";
+#else
+        const QString executable=app+"/OrbitTLM-cli";
+#endif
+        cli.start(executable,{"--bin",path});QVERIFY(cli.waitForFinished(15000));QCOMPARE(cli.exitCode(),0);
+        const auto summary=QJsonDocument::fromJson(cli.readAllStandardOutput()).object();
+        QCOMPARE(summary["satellite"].toString(),QString("AUTO"));
+        QCOMPARE(summary["catalog_business_recognized"].toInt(),99);
+        QCOMPARE(summary["detected_satellites"].toArray().size(),2);
+        QCOMPARE(summary["unidentified_frames"].toInt(),1);
+    }
+    void tcpStatesPartialReadsAndReconnectUseAutoDetection(){
+        QTcpServer server;QVERIFY(server.listen(QHostAddress::LocalHost,0));
+        LiveTcp receiver;QSignalSpy received(&receiver,&LiveTcp::received);
+        QSignalSpy states(&receiver,&LiveTcp::connectionStateChanged);
+        receiver.start("127.0.0.1",server.serverPort(),"AUTO");
+        QVERIFY(!states.isEmpty());
+        QCOMPARE(states.first()[0].value<LiveTcp::ConnectionState>(),LiveTcp::ConnectionState::Connecting);
+        QTRY_COMPARE(receiver.connectionState(),LiveTcp::ConnectionState::Connected);
+        QTRY_VERIFY(server.hasPendingConnections());auto *peer=server.nextPendingConnection();QVERIFY(peer);
+        auto by04=syntheticFrame(),asrtu=by04;asrtu[0]=char(3);asrtu[1]=char(0x24);
+        peer->write(asrtu.left(50));peer->flush();QTest::qWait(20);QCOMPARE(received.size(),0);
+        peer->write(asrtu.mid(50)+by04);peer->flush();QTRY_COMPARE(received.size(),2);
+        QCOMPARE(received[0][0].value<Frame>().satellite,QString("ASRTU-1"));
+        QCOMPARE(received[1][0].value<Frame>().satellite,QString("BY04"));
+        peer->write(by04.left(100));peer->flush();QTest::qWait(20);
+        peer->disconnectFromHost();QTRY_COMPARE(receiver.connectionState(),LiveTcp::ConnectionState::Disconnected);
+        receiver.start("127.0.0.1",server.serverPort(),"AUTO");
+        QTRY_VERIFY(server.hasPendingConnections());peer=server.nextPendingConnection();
+        peer->write(by04);peer->flush();QTRY_COMPARE(received.size(),3);
+        QCOMPARE(received.last()[0].value<Frame>().satellite,QString("BY04"));
+        QVERIFY(received[1][0].value<Frame>().sources!=received.last()[0].value<Frame>().sources);
+        receiver.stop();QCOMPARE(receiver.connectionState(),LiveTcp::ConnectionState::Disconnected);
+        const auto port=server.serverPort();server.close();
+        receiver.start("127.0.0.1",port,"AUTO");QTRY_COMPARE(receiver.connectionState(),LiveTcp::ConnectionState::Failed);
+        receiver.stop();QCOMPARE(receiver.connectionState(),LiveTcp::ConnectionState::Disconnected);
     }
 };
 QTEST_GUILESS_MAIN(ProtocolTest)

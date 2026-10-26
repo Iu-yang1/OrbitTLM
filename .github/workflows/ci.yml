@@ -26,6 +26,8 @@ jobs:
             build/OrbitTLM-UI-preview.png
             build/OrbitTLM-BY04-*.png
             build/OrbitTLM-ASRTU-*.png
+            build/OrbitTLM-AUTO-*.png
+            build/OrbitTLM-TCP-*.png
           if-no-files-found: ignore
       - name: Archive Linux program
         uses: actions/upload-artifact@v4
@@ -63,6 +65,8 @@ jobs:
           path: |
             build/Release/OrbitTLM-BY04-*.png
             build/Release/OrbitTLM-ASRTU-*.png
+            build/Release/OrbitTLM-AUTO-*.png
+            build/Release/OrbitTLM-TCP-*.png
           if-no-files-found: ignore
       - name: Package distributable Windows application
         shell: pwsh

@@ -25,6 +25,7 @@ set_target_properties(OrbitTLM PROPERTIES WIN32_EXECUTABLE TRUE MACOSX_BUNDLE TR
 if(BUILD_TESTING)
   find_package(Qt6 REQUIRED COMPONENTS Test)
   add_executable(orbit_tests tests/protocol.cpp)
+  add_dependencies(orbit_tests OrbitTLM-cli)
   target_link_libraries(orbit_tests PRIVATE orbittlm_core Qt6::Test)
   add_test(NAME protocol COMMAND orbit_tests)
     add_test(NAME cli_help COMMAND OrbitTLM-cli --help)

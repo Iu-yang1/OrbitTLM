@@ -55,9 +55,16 @@ void candidateQuaternion(Frame &f) {
         QString::number(std::sqrt(norm),'g',10),"","candidate_unverified"});
 }
 }
+QString Protocol::detectSatellite(const QByteArray &raw){
+    if(raw.size()!=223 || (quint8(raw[0])>>6)!=0)return "UNKNOWN";
+    const int scid=((quint8(raw[0])&0x3f)<<4)|(quint8(raw[1])>>4);
+    if(scid==0x032)return "ASRTU-1";
+    if(scid==0x205)return "BY04";
+    return "UNKNOWN";
+}
 Frame Protocol::parse(const QByteArray &raw,const QString &satellite) {
     Frame f;
-    f.bytes=raw;f.hash=sha(raw);f.satellite=satellite;
+    f.bytes=raw;f.hash=sha(raw);f.satellite=satellite=="AUTO"?detectSatellite(raw):satellite;
     if(raw.size()!=223) {
         f.error="RS information frame requires exactly 223 bytes (5-byte TM + 218 data)";
         return f;
@@ -87,7 +94,7 @@ Frame Protocol::parse(const QByteArray &raw,const QString &satellite) {
     f.payload=zone;
     // BY04 VC1 is a binary DSLWP SSDV stream; arbitrary 0xC0 bytes
     // inside compressed image data must never be treated as KISS delimiters.
-    if(satellite=="BY04" && f.vcid==1)return f;
+    if(f.satellite=="UNKNOWN" || (f.satellite=="BY04" && f.vcid==1))return f;
     const int open=zone.indexOf(char(0xc0));
     if(open<0)return f;
     const int close=zone.indexOf(char(0xc0),open+1);
@@ -377,22 +384,35 @@ QVector<Frame> Database::load(qint64 sessionId,QString *error) const {
     return frames;
 }
 LiveTcp::LiveTcp(QObject *parent):QObject(parent){
+    qRegisterMetaType<LiveTcp::ConnectionState>();
+    qRegisterMetaType<orbit::Frame>();
     connect(&socket_,&QTcpSocket::readyRead,this,[this]{
         queued_+=socket_.readAll();
         while(queued_.size()>=223){
             const QByteArray bytes=queued_.left(223);queued_.remove(0,223);
             Frame frame=Protocol::parse(bytes,satellite_);
-            frame.sources<<"live:tcp";frame.captureLocal=QDateTime::currentDateTime();
+            frame.sources<<"live:tcp:"+connectionId_;frame.captureLocal=QDateTime::currentDateTime();
             frame.timeBasis="receiver_local";
             emit received(frame);
         }
     });
-    connect(&socket_,&QTcpSocket::connected,this,[this]{emit status("Connected");});
-    connect(&socket_,&QTcpSocket::disconnected,this,[this]{emit status("Disconnected");});
-    connect(&socket_,&QTcpSocket::errorOccurred,this,[this](auto){emit status(socket_.errorString());});
+    connect(&socket_,&QTcpSocket::connected,this,[this]{setConnectionState(ConnectionState::Connected,endpoint_);});
+    connect(&socket_,&QTcpSocket::disconnected,this,[this]{
+        queued_.clear();
+        if(state_!=ConnectionState::Failed)setConnectionState(ConnectionState::Disconnected,endpoint_);
+    });
+    connect(&socket_,&QTcpSocket::errorOccurred,this,[this](auto error){
+        const auto state=error==QAbstractSocket::RemoteHostClosedError?ConnectionState::Disconnected:ConnectionState::Failed;
+        setConnectionState(state,endpoint_+" · "+socket_.errorString());
+    });
+}
+void LiveTcp::setConnectionState(ConnectionState state,const QString &detail){
+    state_=state;emit connectionStateChanged(state,detail);emit status(detail);
 }
 void LiveTcp::start(const QString &host,quint16 port,const QString &satellite){
-    socket_.abort();queued_.clear();satellite_=satellite;socket_.connectToHost(host,port);
+    socket_.abort();queued_.clear();satellite_=satellite;endpoint_=host+":"+QString::number(port);
+    connectionId_=QUuid::createUuid().toString(QUuid::WithoutBraces);
+    setConnectionState(ConnectionState::Connecting,endpoint_);socket_.connectToHost(host,port);
 }
-void LiveTcp::stop(){socket_.disconnectFromHost();queued_.clear();}
+void LiveTcp::stop(){socket_.abort();queued_.clear();setConnectionState(ConnectionState::Disconnected,endpoint_);}
 }

@@ -101,14 +101,14 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent){
         if(business_.isEmpty()){timer_->stop();return;}
         seekVisible(1);
     });
-    connect(live_,&orbit::LiveTcp::status,this,[this](const QString &message){
-        statusBar()->showMessage(QStringLiteral("TCP 连接状态：")+message,7500);
-    });
+    connect(live_,&orbit::LiveTcp::connectionStateChanged,this,&MainWindow::updateTcpStatus);
+    updateTcpStatus(live_->connectionState(),{});
     connect(live_,&orbit::LiveTcp::received,this,[this](const orbit::Frame &f){
         for(const auto &existing:frames_)if(existing.hash==f.hash)return;
         frames_.push_back(f);
         rebuildSession();
-        statusBar()->showMessage(QStringLiteral("接收到新的传输帧；尚未独立校验应用层 CRC"),7000);
+        statusBar()->showMessage(f.satellite=="UNKNOWN"?QStringLiteral("收到未知航天器帧"):
+            QStringLiteral("接收中 · ")+f.satellite,5000);
     });
     const QString dbFile=QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+
                          "/orbittlm.sqlite";
@@ -191,6 +191,8 @@ void MainWindow::buildToolbar(){
     bar->addSeparator();
     bar->addWidget(new QLabel(QStringLiteral("卫星  ")));
     satelliteSelect_=new QComboBox;
+    satelliteSelect_->setObjectName("satelliteMode");
+    satelliteSelect_->addItem(QStringLiteral("自动识别"),QStringLiteral("AUTO"));
     satelliteSelect_->addItem("ASRTU-1",QStringLiteral("ASRTU-1"));
     satelliteSelect_->addItem(QStringLiteral("八一04星 · BY04"),QStringLiteral("BY04"));
     bar->addWidget(satelliteSelect_);
@@ -212,18 +214,22 @@ void MainWindow::buildToolbar(){
     exports->addAction(QStringLiteral("KISS 数据"),this,[this]{exportKiss();});
     exportButton->setMenu(exports);bar->addWidget(exportButton);
     bar->addSeparator();
-    auto *connectTcp=bar->addAction(QStringLiteral("连接 TCP"));
-    connect(connectTcp,&QAction::triggered,this,[this]{
+    connectTcpAction_=bar->addAction(QStringLiteral("连接 TCP"));
+    connectTcpAction_->setObjectName("connectTcpAction");
+    connect(connectTcpAction_,&QAction::triggered,this,[this]{
         bool ok=false;
         const QString address=QInputDialog::getText(this,QStringLiteral("TCP 实时输入"),
           QStringLiteral("主机地址"),QLineEdit::Normal,"127.0.0.1",&ok);
         if(!ok||address.trimmed().isEmpty())return;
         const int port=QInputDialog::getInt(this,QStringLiteral("TCP 实时输入"),
             QStringLiteral("端口"),9985,1,65535,1,&ok);
-        if(ok)live_->start(address,quint16(port),satellite());
+        if(ok)connectTcp(address,quint16(port));
     });
-    auto *stop=bar->addAction(QStringLiteral("断开"));
-    connect(stop,&QAction::triggered,live_,&orbit::LiveTcp::stop);
+    disconnectTcpAction_=bar->addAction(QStringLiteral("断开"));
+    disconnectTcpAction_->setObjectName("disconnectTcpAction");
+    connect(disconnectTcpAction_,&QAction::triggered,live_,&orbit::LiveTcp::stop);
+    tcpStatus_=new QLabel(QStringLiteral("TCP · 未连接"));
+    tcpStatus_->setObjectName("tcpStatus");tcpStatus_->setMargin(4);statusBar()->addPermanentWidget(tcpStatus_);
 }
 void MainWindow::buildMenus(){
     auto *file=menuBar()->addMenu(QStringLiteral("文件(&F)"));
@@ -529,6 +535,7 @@ void MainWindow::buildImages(QTabWidget *tabs){
     imagePreview_=new ImagePreview;
     split->addWidget(imagePreview_);
     imageTable_=new QTableWidget(0,4);
+    imageTable_->setObjectName("imagePackets");
     imageTable_->setHorizontalHeaderLabels({QStringLiteral("图像 ID"),
         QStringLiteral("包序号"),QStringLiteral("宽 × 高"),QStringLiteral("校验状态")});
     setupTable(imageTable_);

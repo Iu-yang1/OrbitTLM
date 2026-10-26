@@ -10,6 +10,10 @@
 namespace orbit {
 namespace {
 int octet(char c) { return static_cast<unsigned char>(c); }
+QString connectionId(const QStringList &sources){
+    for(const auto &source:sources)if(source.startsWith("live:tcp:"))return source;
+    return {};
+}
 bool isPaddingOnly(const QByteArray &bytes) {
     if(bytes.isEmpty())return true;
     return std::all_of(bytes.cbegin(),bytes.cend(),
@@ -97,6 +101,7 @@ QVector<ApplicationPacket> Transport::reassemble(const QVector<Frame> &frames,Tr
     }
     for(const Frame *source:ordered){
         const Frame &frame=*source;
+        if(frame.satellite=="UNKNOWN")continue;
         if(frame.vcid<0)continue;
         if(frame.satellite=="BY04"){
             if(frame.bytes.size()!=223)continue;
@@ -107,7 +112,7 @@ QVector<ApplicationPacket> Transport::reassemble(const QVector<Frame> &frames,Tr
         }
         const int scid=frame.bytes.size()==223?
             ((quint8(frame.bytes[0])&0x3f)<<4)|(quint8(frame.bytes[1])>>4):-1;
-        const QString streamKey=frame.satellite+":"+QString::number(scid)+":"+QString::number(frame.vcid);
+        const QString streamKey=frame.satellite+":"+QString::number(scid)+":"+QString::number(frame.vcid)+":"+connectionId(frame.sources);
         State &s=states[streamKey];
         // Only the per-VC counter can assess continuity; master count interleaves VCs.
         if(s.haveCount && frame.virtualCount>=0 && ((s.previousCount+1)&0xff)!=frame.virtualCount){
@@ -216,7 +221,7 @@ QVector<ApplicationPacket> Transport::assembleSegments(const QVector<Application
         }
         const int seq=(octet(b[2])<<8)|octet(b[3]);
         const int flags=seq>>14,count=seq&0x3fff;
-        const QString key=p.satellite+":"+QString::number(p.vcid)+":"+QString::number(id);
+        const QString key=p.satellite+":"+QString::number(p.vcid)+":"+QString::number(id)+":"+connectionId(p.sources);
         if(flags==3){flush(key);out.push_back(p);continue;}
         if(flags==1){
             if(pending.contains(key)&&pending[key].lastBytes==b)continue;
