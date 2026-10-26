@@ -10,6 +10,9 @@
 #include <QTemporaryDir>
 #include <QFile>
 #include <QFontDatabase>
+#include <QChartView>
+#include <QChart>
+#include <QLineSeries>
 #include <QLineEdit>
 #include <QStandardPaths>
 
@@ -104,6 +107,66 @@ private slots:
         const int before=events->rowCount();
         QVERIFY(!window.openSession({},temp.filePath("missing.bin"),"BY04",&error));
         QCOMPARE(events->rowCount(),before);
+    }
+    void asrtuUntimedFragmentDoesNotDisplayPreviousTelemetry(){
+        QFile source(QApplication::applicationDirPath()+"/fixtures/asrtu_capture_20261024.b64");
+        QVERIFY(source.open(QIODevice::ReadOnly));
+        QTemporaryDir temp;const QString path=temp.filePath("asrtu.bin");
+        QFile bin(path);QVERIFY(bin.open(QIODevice::WriteOnly));
+        bin.write(QByteArray::fromBase64(source.readAll()));bin.close();
+        MainWindow window;window.show();QString error;
+        const QString log=QApplication::applicationDirPath()+"/fixtures/asrtu_capture_20261024_fec.txt";
+        auto *events=window.findChild<QTableWidget*>("eventTimeline");QVERIFY(events);
+        auto *fields=window.findChild<QTreeWidget*>("engineeringFields");QVERIFY(fields);
+        auto *summary=window.findChild<QLabel*>("engineeringSummary");QVERIFY(summary);
+        auto *detail=window.findChild<QLabel*>("fieldDetail");QVERIFY(detail);
+        auto *chart=window.findChild<QChartView*>("engineeringChart");QVERIFY(chart);
+        auto *pages=window.findChild<QTabBar*>("workspaceNavigation");QVERIFY(pages);
+        auto *search=window.findChild<QLineEdit*>("engineeringSearch");QVERIFY(search);
+        for(int repeat=0;repeat<3;++repeat){
+            QVERIFY2(window.openSession(log,path,"ASRTU-1",&error),qPrintable(error));
+            pages->setCurrentIndex(1);QCOMPARE(events->rowCount(),88);
+            int pdb=-1,unknown=-1,sat=-1,nextSat=-1,untimed=0;
+            for(int row=0;row<events->rowCount();++row){
+                const auto title=events->item(row,1)->text();
+                if(title.contains("PDB-S0"))pdb=row;
+                if(title.contains("SAT-S0")){if(sat<0)sat=row;else if(nextSat<0)nextSat=row;}
+                if(events->item(row,0)->text().startsWith("BIN")){++untimed;if(unknown<0)unknown=row;}
+            }
+            QCOMPARE(untimed,10);QVERIFY(pdb>=0&&unknown>0&&sat>=0&&nextSat>=0);
+            QCOMPARE(events->item(unknown,0)->text(),QStringLiteral("BIN · #105"));
+            QVERIFY(!events->item(unknown-1,0)->text().startsWith("BIN"));
+            QVERIFY(!events->item(unknown+10,0)->text().startsWith("BIN"));
+            events->selectRow(pdb);QVERIFY(fields->topLevelItemCount()>0);
+            QVERIFY(!chart->chart()->series().isEmpty());
+            const auto raw=fields->findItems(QStringLiteral("离轨球展开0x4F开0x46关"),Qt::MatchExactly|Qt::MatchRecursive);
+            QCOMPARE(raw.size(),1);QCOMPARE(raw[0]->text(1),QString("0x46"));
+            fields->setCurrentItem(raw[0]);
+            auto *rawSeries=qobject_cast<QLineSeries*>(chart->chart()->series().value(0));QVERIFY(rawSeries);
+            QVERIFY(chart->chart()->title().contains(QStringLiteral("原码")));
+            QCOMPARE(rawSeries->points().first().y(),70.0);
+            events->selectRow(unknown);
+            QCOMPARE(fields->topLevelItemCount(),0);QVERIFY(detail->text().isEmpty());
+            QVERIFY(!summary->text().contains("PDB"));QVERIFY(chart->chart()->series().isEmpty());
+            if(!repeat)window.grab().save(QApplication::applicationDirPath()+"/OrbitTLM-ASRTU-raw-fragment.png");
+            events->selectRow(sat);
+            const auto temperatures=fields->findItems(QStringLiteral("3.3V温度"),Qt::MatchExactly|Qt::MatchRecursive);
+            QCOMPARE(temperatures.size(),1);QCOMPARE(temperatures[0]->text(1),QString("26"));
+            fields->setCurrentItem(temperatures[0]);
+            const QString code=temperatures[0]->data(0,Qt::UserRole).toString();
+            auto *temperatureSeries=qobject_cast<QLineSeries*>(chart->chart()->series().value(0));QVERIFY(temperatureSeries);
+            QCOMPARE(temperatureSeries->points().first().y(),26.0);
+            events->selectRow(nextSat);
+            QVERIFY(fields->currentItem());QCOMPARE(fields->currentItem()->data(0,Qt::UserRole).toString(),code);
+            search->setText(QStringLiteral("温度"));events->selectRow(sat);
+            for(int group=0;group<fields->topLevelItemCount();++group)
+                for(int child=0;child<fields->topLevelItem(group)->childCount();++child){
+                    const auto *field=fields->topLevelItem(group)->child(child);
+                    if(!field->isHidden())QVERIFY(field->text(0).contains(QStringLiteral("温度")));
+                }
+            search->clear();QApplication::processEvents();
+            if(!repeat)window.grab().save(QApplication::applicationDirPath()+"/OrbitTLM-ASRTU-fixed.png");
+        }
     }
 };
 QTEST_MAIN(UiSmoke)

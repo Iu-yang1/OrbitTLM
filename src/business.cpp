@@ -46,6 +46,7 @@ bool readBits(const QByteArray &buffer,int octet,int highBit,int length,Raw &r){
         u=(u<<1)|((quint8(buffer.at(int(bit/8)))>>(7-(bit%8)))&1);
     }
     r.bits=u;r.hasNumber=true;
+    r.hex=QString::number(u,16).rightJustified((length+7)/8*2,'0').toUpper();
     r.signedValue=length==64?std::bit_cast<qint64>(u):
         ((u & (quint64(1)<<(length-1)))?
              std::bit_cast<qint64>(u | (~quint64(0)<<length)):qint64(u));
@@ -301,16 +302,20 @@ QVector<BusinessPacket> BusinessCatalog::decodeAll(const QVector<ApplicationPack
             if(f.status.startsWith("raw_"))++counts.unsupportedFields;
         decoded.push_back(std::move(result));
     }
-    // Sort only by genuine receiver timestamps. BIN-only records remain
-    // unordered in absolute UTC; they follow known-time records stably.
-    std::stable_sort(decoded.begin(),decoded.end(),[](const BusinessPacket &a,const BusinessPacket &b){
+    orderForReplay(decoded);
+    if(stats)*stats=counts;
+    return decoded;
+}
+void BusinessCatalog::orderForReplay(QVector<BusinessPacket> &packets){
+    // Source order anchors untimed BIN fragments between their neighboring LOG records.
+    const bool ordered=std::all_of(packets.cbegin(),packets.cend(),[](const auto &p){return p.transport.replayOrder>=0;});
+    std::stable_sort(packets.begin(),packets.end(),[ordered](const BusinessPacket &a,const BusinessPacket &b){
+        if(ordered)return a.transport.replayOrder<b.transport.replayOrder;
         const auto &ta=a.transport.captureLocal,&tb=b.transport.captureLocal;
         if(ta.isValid()!=tb.isValid())return ta.isValid();
         if(!ta.isValid())return false;
         return ta<tb;
     });
-    if(stats)*stats=counts;
-    return decoded;
 }
 QJsonObject BusinessCatalog::toJson(const BusinessPacket &packet){
     QJsonArray fields,sources,segments;
@@ -323,6 +328,7 @@ QJsonObject BusinessCatalog::toJson(const BusinessPacket &packet){
         {"ccsds_apid",packet.transport.apid},
         {"ccsds_packet_sequence",packet.transport.sequence},
         {"identification",packet.identification},
+        {"replay_order",packet.transport.replayOrder},
         {"definition_evidence",packet.definitionEvidence},
         {"field_base_kiss_octet",packet.fieldBaseKissOctet},
         {"field_buffer",packet.transport.assembledBytes.isEmpty()?"raw_kiss_hex":"assembled_packet_hex"},

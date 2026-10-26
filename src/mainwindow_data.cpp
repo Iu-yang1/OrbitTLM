@@ -60,11 +60,22 @@ QString shortTime(const QDateTime &time){
     return time.isValid()?time.toString("HH:mm:ss.zzz"):QStringLiteral("时间未知");
 }
 QString displayValue(const EngineeringField &f){
+    if(!f.rawHex.isEmpty()&&(f.status=="table_raw_hex" ||
+       (f.status.startsWith("raw_")&&f.value==f.rawHex)))return "0x"+f.rawHex;
     if(!f.status.startsWith("raw_")){
         bool ok=false;const double number=f.value.toDouble(&ok);
         if(ok&&std::isfinite(number))return QString::number(number,'g',8);
     }
     return f.value;
+}
+bool numberForPlot(const EngineeringField &f,double &value,bool &raw){
+    raw=f.status=="table_raw_hex"||f.status.startsWith("raw_");
+    if(f.status=="raw_nonfinite_float"||f.status=="invalid_source_bit_position")return false;
+    bool ok=false;
+    if(raw||f.status.startsWith("table_enum"))value=f.rawNumber.toDouble(&ok);
+    else if(f.status=="table_formula"||f.status=="reference_formula"||f.status=="protocol_header_only")
+        value=f.value.toDouble(&ok);
+    return ok&&std::isfinite(value);
 }
 bool recognizedBusiness(const BusinessPacket &p){
     return !p.packetName.isEmpty()&&p.identification!="by04_ccsds_header_only";
@@ -123,6 +134,7 @@ QString MainWindow::eventTitle(const BusinessPacket &packet)const{
         return packet.packetLabel;
     if(packet.identification=="by04_opaque_kiss")
         return QStringLiteral("BY04 · 未分类 KISS 业务包");
+    if(packet.packetName.isEmpty())return QStringLiteral("未识别数据 · %1 B").arg(packet.transport.bytes.size());
     if(!packet.packetName.isEmpty()){
         const QString &id=packet.packetName;
         if(id.startsWith("SAT"))return QStringLiteral("卫星平台遥测 · ")+id;
@@ -138,12 +150,7 @@ QString MainWindow::eventTitle(const BusinessPacket &packet)const{
         if(id.startsWith("BBB"))return QStringLiteral("数传遥测 · ")+id;
         return QStringLiteral("遥测业务包 · ")+id;
     }
-    if(packet.mainType>=0&&packet.subType>=0){
-        return QStringLiteral("未识别业务包（%1 / %2）")
-            .arg(packet.mainType,2,16,QChar('0'))
-            .arg(packet.subType,2,16,QChar('0')).toUpper();
-    }
-    return QStringLiteral("未识别 KISS 应用包");
+    return {};
 }
 const BusinessPacket *MainWindow::latestRecognized(int index,
                                                    const QStringList &prefixes)const{
@@ -261,8 +268,10 @@ void MainWindow::populateEvents(){
         const QString title=eventTitle(b);
         const QString basis=b.transport.timestampBasis;
         const QString source=sourceLabel(b.transport.sources);
-        eventTable_->setItem(i,0,item(shortTime(b.transport.captureLocal),
-            QStringLiteral("本机记录时间；尚未确认日志时区\n%1").arg(basis)));
+        const QString time=b.transport.captureLocal.isValid()?shortTime(b.transport.captureLocal):
+            (b.transport.firstMaster>=0?QStringLiteral("BIN · #%1").arg(b.transport.firstMaster):QStringLiteral("无接收时间"));
+        eventTable_->setItem(i,0,item(time,b.transport.captureLocal.isValid()?
+            QStringLiteral("接收记录时间\n%1").arg(basis):QStringLiteral("此帧没有接收时间记录；按原始帧顺序排列")));
         eventTable_->setItem(i,1,item(title,
             QStringLiteral("应用数据包字节：%1\nCRC：未校验").arg(b.transport.bytes.size())));
         const QString status=b.identification=="by04_kiss_envelope"?
@@ -355,8 +364,8 @@ void MainWindow::updateMetrics(){
     message_->setText(satellite()=="BY04"?
         QStringLiteral("BY04 · %1 包 · 图像 %2")
             .arg(packets_.size()).arg(images_.size()):
-        QStringLiteral("%1 包 · 缺帧 %2")
-            .arg(packets_.size()).arg(transportStats_.interruptedByCounterGap));
+        QStringLiteral("%1 包 · 已识别 %2 · 未识别 %3")
+            .arg(packets_.size()).arg(good).arg(business_.size()-good));
 }
 void MainWindow::updateOverview(int index){
     if(index<0||index>=business_.size()){
@@ -412,11 +421,17 @@ void MainWindow::updateFieldCard(QGroupBox *card,const QStringList &prefixes,int
     content->setText(text);
 }
 void MainWindow::populateEngineering(int index){
+    const auto *previous=fieldTree_->currentItem();
+    const QString previousCode=previous?previous->data(0,Qt::UserRole).toString():QString();
+    const QString previousPacket=previous?previous->data(0,Qt::UserRole+1).toString():QString();
     QSignalBlocker block(engineeringTable_);
     engineeringTable_->setRowCount(0);
     fieldTree_->clear();
-    fieldDetail_->setText(QStringLiteral("选择参数查看原始值、位字段位置及换算公式"));
-    if(index<0)return;
+    fieldDetail_->clear();fieldDetail_->setToolTip({});
+    if(index<0||index>=business_.size()){
+        engineeringSummary_->setText(QStringLiteral("未选择数据"));
+        plotEngineering({},{},-1);return;
+    }
     int highlighted=-1;
     for(int i=0;i<=index && i<business_.size();++i){
         const auto &p=business_[i];
@@ -430,10 +445,11 @@ void MainWindow::populateEngineering(int index){
         engineeringTable_->setItem(row,2,item(QStringLiteral("%1 项").arg(p.fields.size())));
         highlighted=i;
     }
-    const auto *chosen=latestRecognized(index,{""});
-    if(!chosen){
-        engineeringSummary_->setText(
-            QStringLiteral("当前时段暂无符合公开 27 类定义的分系统业务包；原始 KISS 已保留于“原始数据”。"));
+    const auto *chosen=&business_[index];
+    if(chosen->fields.isEmpty()){
+        engineeringSummary_->setText(QStringLiteral("%1 · 无业务字段").arg(eventTitle(*chosen)));
+        engineeringSummary_->setToolTip(QStringLiteral("完整字节保留在“原始数据”中"));
+        plotEngineering({},{},-1);
         return;
     }
     engineeringSummary_->setText(QStringLiteral("%1  /  %2 项参数")
@@ -441,6 +457,8 @@ void MainWindow::populateEngineering(int index){
     engineeringSummary_->setToolTip(chosen->definitionEvidence);
     QHash<QString,QTreeWidgetItem*> groups;
     QSignalBlocker treeBlocked(fieldTree_);
+    QTreeWidgetItem *selected=nullptr;int bestScore=-1;bool retained=false;
+    const QString needle=engineeringSearch_->text();
     for(const auto &f:chosen->fields){
         const QString group=categoryFor(f.nameCn);
         auto *root=groups.value(group,nullptr);
@@ -455,9 +473,22 @@ void MainWindow::populateEngineering(int index){
         field->setData(0,Qt::UserRole+1,chosen->packetName);
         field->setToolTip(0,f.code+"\n"+f.nameEn+"\n"+f.bits+"\n"+f.dataType+"\n"+f.definitionEvidence);
         field->setToolTip(1,QStringLiteral("原始 HEX：")+f.rawHex);
+        if(needle.isEmpty()||f.nameCn.contains(needle,Qt::CaseInsensitive)||f.code.contains(needle,Qt::CaseInsensitive)){
+            if(f.code==previousCode&&chosen->packetName==previousPacket){selected=field;retained=true;}
+            else if(!retained){
+                double number=0;bool raw=false;int score=0;
+                if(numberForPlot(f,number,raw)){
+                    score=raw?1:2;
+                    if(!f.unit.isEmpty())score+=1;
+                    if(f.nameCn.contains(QStringLiteral("温度"))||f.nameCn.contains(QStringLiteral("电压"))||
+                       f.nameCn.contains(QStringLiteral("四元数")))score+=3;
+                }
+                if(score>bestScore){bestScore=score;selected=field;}
+            }
+        }
     }
     fieldTree_->expandAll();
-    engineeringSearch_->setText(engineeringSearch_->text()); // keep search input intact
+    applyEngineeringFilter();
     if(highlighted>=0){
         for(int row=0;row<engineeringTable_->rowCount();++row){
             auto *i=engineeringTable_->item(row,0);
@@ -466,8 +497,22 @@ void MainWindow::populateEngineering(int index){
             }
         }
     }
-    plotEngineering(chosen->packetName,
-        chosen->fields.isEmpty()?QString():chosen->fields.first().code,index);
+    treeBlocked.unblock();
+    if(selected){fieldTree_->setCurrentItem(selected);fieldTree_->scrollToItem(selected);}
+    else plotEngineering({},{},-1);
+}
+void MainWindow::applyEngineeringFilter(){
+    const QString needle=engineeringSearch_->text();
+    for(int i=0;i<fieldTree_->topLevelItemCount();++i){
+        auto *group=fieldTree_->topLevelItem(i);int shown=0;
+        for(int j=0;j<group->childCount();++j){
+            auto *field=group->child(j);
+            const bool matches=needle.isEmpty()||field->text(0).contains(needle,Qt::CaseInsensitive)||
+                field->data(0,Qt::UserRole).toString().contains(needle,Qt::CaseInsensitive);
+            field->setHidden(!matches);if(matches)++shown;
+        }
+        group->setHidden(shown==0);
+    }
 }
 void MainWindow::plotEngineering(const QString &packet,const QString &code,int upTo){
     auto *chart=new QChart;
@@ -476,27 +521,38 @@ void MainWindow::plotEngineering(const QString &packet,const QString &code,int u
     if(!code.isEmpty()&&upTo>=0){
         auto *series=new QLineSeries;
         QDateTime first;
+        bool timed=true,rawSeries=false;QString name=code;
+        for(int i=0;i<=upTo&&i<business_.size();++i){
+            const auto &p=business_[i];if(p.packetName!=packet)continue;
+            for(const auto &f:p.fields)if(f.code==code){
+                double value=0;bool raw=false;
+                if(numberForPlot(f,value,raw)&&!p.transport.captureLocal.isValid())timed=false;
+            }
+        }
         for(int i=0;i<=upTo&&i<business_.size();++i){
             const auto &p=business_[i];
             if(p.packetName!=packet)continue;
             for(const auto &f:p.fields)if(f.code==code){
-                bool ok=false;const double value=f.value.toDouble(&ok);
-                if(!ok||!std::isfinite(value))continue;
+                double value=0;bool raw=false;
+                if(!numberForPlot(f,value,raw))continue;
+                rawSeries=rawSeries||raw;name=f.nameCn;
                 if(!first.isValid()&&p.transport.captureLocal.isValid())
                     first=p.transport.captureLocal;
-                const qreal elapsed=(first.isValid()&&p.transport.captureLocal.isValid())?
+                const qreal elapsed=(timed&&first.isValid())?
                     qreal(first.msecsTo(p.transport.captureLocal))/1000.0 : qreal(i);
                 series->append(elapsed,value);
             }
         }
         if(series->count()){
+            series->setPointsVisible(series->count()==1);
             chart->addSeries(series);chart->createDefaultAxes();
-            chart->setTitle(QStringLiteral("%1 · %2（记录时间相对秒）").arg(packet,code));
+            chart->setTitle(name+(rawSeries?QStringLiteral(" · 原码"):QString())+
+                (timed?QStringLiteral("（接收相对秒）"):QStringLiteral("（包序）")));
         }else{
             delete series;
             chart->setTitle(QStringLiteral("所选参数暂无可用数值序列"));
         }
-    }else chart->setTitle(QStringLiteral("选择业务遥测参数以查看时序曲线"));
+    }else chart->setTitle(QStringLiteral("当前数据没有可绘制的业务参数"));
     engineeringChart_->setChart(chart);
 }
 void MainWindow::updateAttitude(int index){

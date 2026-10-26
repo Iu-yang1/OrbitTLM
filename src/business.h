@@ -32,6 +32,7 @@ public:
                                       BusinessStats *stats=nullptr) const;
     static QJsonObject toJson(const BusinessPacket &packet);
     static EngineeringField decodeField(const QJsonObject &definition,const QByteArray &payload);
+    static void orderForReplay(QVector<BusinessPacket> &packets);
     static bool exportJson(const QString &file,const QVector<BusinessPacket> &packets,
                            QString *error=nullptr);
     static bool exportCsv(const QString &file,const QVector<BusinessPacket> &packets,

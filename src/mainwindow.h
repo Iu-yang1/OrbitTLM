@@ -54,6 +54,7 @@ private:
     void selectEvent(int index);
     void seekVisible(int direction);
     void populateEngineering(int index);
+    void applyEngineeringFilter();
     void plotEngineering(const QString &packet,const QString &code,int upTo);
     void updateAttitude(int index);
     void updateOverview(int index);

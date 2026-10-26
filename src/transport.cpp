@@ -133,6 +133,7 @@ QVector<ApplicationPacket> Transport::reassemble(const QVector<Frame> &frames,Tr
                 if(s.started && !s.buffer.isEmpty() && !s.oversized &&
                    !s.escaped && !isPaddingOnly(s.buffer)){
                     ApplicationPacket pkt;
+                    pkt.replayOrder=out.size();
                     pkt.bytes=s.buffer;pkt.satellite=frame.satellite;
                     pkt.vcid=frame.vcid;
                     pkt.firstMaster=s.firstMaster;
@@ -262,6 +263,7 @@ bool Transport::exportJson(const QString &path,const QVector<ApplicationPacket> 
         for(const auto &s:p.sources)src.append(s);
         a.append(QJsonObject{
           {"satellite",p.satellite},{"vcid",p.vcid},
+          {"replay_order",p.replayOrder},
           {"first_master",p.firstMaster},{"last_master",p.lastMaster},
           {"contributing_frames",p.contributingFrames},
           {"capture_local",p.captureLocal.isValid()?p.captureLocal.toString(Qt::ISODateWithMs):QString()},

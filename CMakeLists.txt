@@ -60,5 +60,11 @@ if(TARGET orbit_tests)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
       "${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/by04_business_capture.b64"
       "$<TARGET_FILE_DIR:orbit_tests>/fixtures/by04_business_capture.b64"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/asrtu_capture_20261024.b64"
+      "$<TARGET_FILE_DIR:orbit_tests>/fixtures/asrtu_capture_20261024.b64"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/asrtu_capture_20261024_fec.txt"
+      "$<TARGET_FILE_DIR:orbit_tests>/fixtures/asrtu_capture_20261024_fec.txt"
     VERBATIM)
 endif()

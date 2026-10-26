@@ -139,12 +139,7 @@ QVector<BusinessPacket> By04Decoder::decodeAll(const QVector<ApplicationPacket> 
     decoded.reserve(packets.size());
     // BY04's referenced envelope has one subtype octet in each secondary header.
     for(const auto &packet:Transport::assembleSegments(packets,1))decoded.push_back(decode(packet));
-    std::stable_sort(decoded.begin(),decoded.end(),[](const BusinessPacket &a,const BusinessPacket &b){
-        const QDateTime &ta=a.transport.captureLocal,&tb=b.transport.captureLocal;
-        if(ta.isValid()!=tb.isValid())return ta.isValid();
-        if(!ta.isValid())return false;
-        return ta<tb;
-    });
+    BusinessCatalog::orderForReplay(decoded);
     return decoded;
 }
 QVector<ImagePacket> By04Decoder::images(const QVector<Frame> &frames){

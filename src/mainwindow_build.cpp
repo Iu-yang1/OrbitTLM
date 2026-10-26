@@ -404,8 +404,10 @@ void MainWindow::buildOverview(QTabWidget *tabs){
 void MainWindow::buildEngineering(QTabWidget *tabs){
     auto *page=new QWidget;auto *layout=new QVBoxLayout(page);
     engineeringSummary_=subtitle(QStringLiteral("选择数据包查看参数"));
+    engineeringSummary_->setObjectName("engineeringSummary");
     layout->addWidget(engineeringSummary_);
     engineeringSearch_=new QLineEdit;
+    engineeringSearch_->setObjectName("engineeringSearch");
     engineeringSearch_->setPlaceholderText(QStringLiteral("筛选当前分包字段名或编号"));
     auto *filters=new QHBoxLayout;
     filters->addWidget(engineeringSearch_,1);
@@ -434,11 +436,13 @@ void MainWindow::buildEngineering(QTabWidget *tabs){
     fieldTree_->header()->setSectionResizeMode(2,QHeaderView::ResizeToContents);
     rightLayout->addWidget(fieldTree_,3);
     fieldDetail_=subtitle(QStringLiteral("选择参数查看原始 HEX、字段位置与换算公式"));
+    fieldDetail_->setObjectName("fieldDetail");
     fieldDetail_->setTextInteractionFlags(Qt::TextSelectableByMouse);
     rightLayout->addWidget(fieldDetail_);
     fieldDetail_->hide();
     connect(details,&QCheckBox::toggled,fieldDetail_,&QLabel::setVisible);
     engineeringChart_=new QChartView(new QChart);
+    engineeringChart_->setObjectName("engineeringChart");
     engineeringChart_->setRenderHint(QPainter::Antialiasing);
     engineeringChart_->setMinimumHeight(165);
     rightLayout->addWidget(engineeringChart_,2);
@@ -459,28 +463,17 @@ void MainWindow::buildEngineering(QTabWidget *tabs){
         if(item->data(0,Qt::UserRole).isNull())return;
         const QString code=item->data(0,Qt::UserRole).toString();
         const QString packet=item->data(0,Qt::UserRole+1).toString();
-        for(int i=0;i<business_.size();++i)if(i<=currentIndex_ && business_[i].packetName==packet)
-            for(const auto &f:business_[i].fields)if(f.code==code){
-                fieldDetail_->setText(QStringLiteral("%1  ·  位位置 %2\n原码 %3  ·  公式 %4")
+        if(currentIndex_<0||currentIndex_>=business_.size())return;
+        if(business_[currentIndex_].packetName==packet)
+            for(const auto &f:business_[currentIndex_].fields)if(f.code==code){
+                fieldDetail_->setText(QStringLiteral("%1  ·  位位置 %2\n原码 0x%3  ·  公式 %4")
                     .arg(f.code,f.bits,f.rawHex,
                          f.formula.isEmpty()?QStringLiteral("—"):f.formula));
                 fieldDetail_->setToolTip(f.definitionEvidence);
             }
         plotEngineering(packet,code,currentIndex_);
     });
-    connect(engineeringSearch_,&QLineEdit::textChanged,this,[this](const QString &needle){
-        if(!fieldTree_)return;
-        for(int i=0;i<fieldTree_->topLevelItemCount();++i){
-            auto *group=fieldTree_->topLevelItem(i);int shown=0;
-            for(int j=0;j<group->childCount();++j){
-                auto *field=group->child(j);
-                const bool matches=needle.isEmpty()||field->text(0).contains(needle,Qt::CaseInsensitive)||
-                    field->data(0,Qt::UserRole).toString().contains(needle,Qt::CaseInsensitive);
-                field->setHidden(!matches);if(matches)shown++;
-            }
-            group->setHidden(shown==0);
-        }
-    });
+    connect(engineeringSearch_,&QLineEdit::textChanged,this,[this]{applyEngineeringFilter();});
     tabs->addTab(page,QStringLiteral("业务遥测"));
 }
 void MainWindow::buildAttitude(QTabWidget *tabs){

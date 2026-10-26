@@ -690,6 +690,75 @@ private slots:
         }
         QVERIFY(checked>=100);
     }
+    void asrtuReportedCaptureKeepsUntimedFragmentsInPlace(){
+        QFile fixture(QCoreApplication::applicationDirPath()+"/fixtures/asrtu_capture_20261024.b64");
+        QVERIFY(fixture.open(QIODevice::ReadOnly));
+        const auto bytes=QByteArray::fromBase64(fixture.readAll());QCOMPARE(bytes.size(),18063);
+        QTemporaryDir temp;const QString binPath=temp.filePath("frames.bin");
+        QFile bin(binPath);QVERIFY(bin.open(QIODevice::WriteOnly));bin.write(bytes);bin.close();
+        const auto log=Protocol::fromLog(QCoreApplication::applicationDirPath()+"/fixtures/asrtu_capture_20261024_fec.txt","ASRTU-1");
+        const auto bins=Protocol::fromBin(binPath,"ASRTU-1");
+        QCOMPARE(log.size(),80);QCOMPARE(bins.size(),81);
+        const auto frames=Protocol::fuse(log,bins);
+        BusinessCatalog catalog;QString error;
+        QVERIFY(catalog.loadDirectory(QCoreApplication::applicationDirPath()+"/protocols/asrtu1",&error));
+        QByteArray previous;
+        for(int repeat=0;repeat<3;++repeat){
+            const auto packets=Transport::reassemble(frames);QCOMPARE(packets.size(),88);
+            BusinessStats stats;const auto business=catalog.decodeAll(packets,&stats);
+            QCOMPARE(stats.recognized,78);QCOMPARE(stats.unknown,10);
+            int untimed=0,temperatures=0,platformPackets=0,fixedOffsetMismatches=0;
+            for(int i=0;i<business.size();++i){
+                const auto &p=business[i];QCOMPARE(p.transport.replayOrder,i);
+                if(!p.transport.captureLocal.isValid()){
+                    ++untimed;QCOMPARE(p.transport.firstMaster,105);
+                    QVERIFY(i>0&&i<business.size()-1);QVERIFY(p.fields.isEmpty());
+                }
+                const auto payload=p.identification=="native_type_prefix"?p.transport.bytes:p.transport.bytes.mid(7);
+                if(p.packetName=="SAT-S0"){
+                    ++platformPackets;
+                    const auto source=std::find_if(frames.cbegin(),frames.cend(),[&](const auto &f){return f.master==p.transport.firstMaster;});
+                    QVERIFY(source!=frames.cend());
+                    // Reference EXE 0x472CCA: one-based position = field offset + 14.
+                    // A KISS escape before the sensor shifts these physical TM positions.
+                    bool mismatch=false;
+                    for(int sensor=0;sensor<3;++sensor)
+                        if(quint8(source->bytes[207+sensor])!=quint8(payload[194+sensor]))mismatch=true;
+                    if(mismatch)++fixedOffsetMismatches;
+                }
+                for(const auto &f:p.fields)if(f.nameCn.contains(QStringLiteral("温度"))){
+                    const auto loc=f.bits.split('.');const int offset=loc[0].toInt(),width=loc[2].toInt();
+                    QCOMPARE(loc[1].toInt(),7);QVERIFY(width==8||width==16);
+                    const double raw=width==8?int(qint8(payload[offset])):
+                        int(qFromBigEndian<qint16>(reinterpret_cast<const uchar*>(payload.constData()+offset)));
+                    double expected=raw;
+                    if(f.formula=="F=-0.4907*SX+6849.1")expected=-0.4907*raw+6849.1;
+                    else if(f.formula=="F=-0.4395*SX+6642.9")expected=-0.4395*raw+6642.9;
+                    else if(f.formula=="F=-0.3814*SX+5587.4")expected=-0.3814*raw+5587.4;
+                    else QVERIFY(f.formula=="F=SX"||f.formula==QStringLiteral("F=SX<℃>"));
+                    QVERIFY2(qAbs(f.value.toDouble()-expected)<1e-8,qPrintable(f.code));
+                    ++temperatures;
+                }
+            }
+            QCOMPARE(untimed,10);QCOMPARE(temperatures,750);
+            QCOMPARE(platformPackets,13);QCOMPARE(fixedOffsetMismatches,3);
+            QJsonArray json;for(const auto &p:business)json.append(BusinessCatalog::toJson(p));
+            const auto serialized=QJsonDocument(json).toJson(QJsonDocument::Compact);
+            if(repeat)QCOMPARE(serialized,previous);previous=serialized;
+        }
+    }
+    void signedTemperatureAndUnalignedWordHaveExplicitValues(){
+        QJsonObject d{{"id","test.temperature"},{"bits","0.7.16"},{"formula","F=SX"}};
+        auto f=BusinessCatalog::decodeField(d,QByteArray::fromHex("1acd"));
+        QCOMPARE(f.rawHex,QString("1ACD"));QCOMPARE(f.value,QString("6861"));
+        f=BusinessCatalog::decodeField(d,QByteArray::fromHex("e533"));QCOMPARE(f.value,QString("-6861"));
+        d["bits"]="0.3.12";
+        f=BusinessCatalog::decodeField(d,QByteArray::fromHex("bacd"));
+        QCOMPARE(f.rawHex,QString("0ACD"));QCOMPARE(f.value,QString("-1331"));
+        d["formula"]="F=X";d["bits"]="0.7.16";
+        f=BusinessCatalog::decodeField(d,QByteArray::fromHex("1acd"));
+        QCOMPARE(f.value,QString("1ACD"));QCOMPARE(f.status,QString("table_raw_hex"));
+    }
 };
 QTEST_GUILESS_MAIN(ProtocolTest)
 #include "protocol.moc"

@@ -13,3 +13,13 @@
 - [分段标志标准](https://ccsds.org/Pubs/133x0b2e2.pdf) · [公开参考字头](https://github.com/HyacinthSat/asrtu-sndmdm-backend) · [布局参考](https://primer.style/product/components/page-layout/)
 
 Linux/Windows CI 状态随交付报告记录。
+
+## ASRTU 实录回归修复
+
+- 原始 BIN：81 帧，SHA256 `199ffecd7cd98ea840acc1a305652ce2edad3fffdfa451a5346c1cbd6a3be2a1`；LOG 有 80 个去重 FEC 帧。
+- 连续三次复现：88 个 KISS 记录、78 个业务包、13 条四元数；10 条无时间短片段全部来自 MFC=105。
+- 修复无时间数据被排到列表末尾、未知片段显示上一条参数、原码没有十六进制前缀、曲线误用原码文本作为十进制的问题。
+- 保留采集顺序，未记录时间显示 BIN 帧号；原码曲线使用实际数值并明确标记原码。默认选择可绘图字段，保持同类型参数及筛选条件。
+- 750 项温度按独立 QtEndian/有符号公式复核；另覆盖 0x1ACD 正数、负数和跨字节 12 位提取。非整字节标量 HEX 改为与实际数值一致。
+- 静态反编译用户参考 EXE：解包运行库、恢复 356 项重定位、导出 20 个用户函数；原程序未执行。温度读取助手 0x472CCA、三项业务偏移 194/195/196；固定帧位置在这份数据的 3/13 个 SAT-S0 中受 KISS 转义影响。
+- 新测试涵盖实包三次回放、BIN 时间标记、未知记录清空、0x46 按 70 绘图、温度 26 显示及曲线、字段选择与筛选保留。Windows 协议 QtTest 39 项、UI 6 项通过。

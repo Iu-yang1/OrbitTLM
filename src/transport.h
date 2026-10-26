@@ -32,6 +32,7 @@ struct ApplicationPacket {
     int sequence = -1;
     int opaqueSuffixBytes = -1; // bytes after optional inner packet length (CRC unverified)
     int contributingFrames = 0;
+    int replayOrder = -1;
     QByteArray assembledBytes;
     QVector<QByteArray> segments;
     QString assemblyStatus;
