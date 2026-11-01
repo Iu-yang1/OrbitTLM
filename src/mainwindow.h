@@ -173,6 +173,7 @@ private:
     QLabel *angularVelocity_[3]{};
     QLabel *normLabel_=nullptr;
     QSpinBox *imageApid_=nullptr;
+    QComboBox *imageSatelliteSelect_=nullptr;
     QProgressBar *imageCoverage_=nullptr;
     QLabel *imageCoverageNote_=nullptr;
 };

@@ -73,6 +73,7 @@ QString canonicalSatelliteName(const QString &name) {
     if(compact==QStringLiteral("BY04")||compact==QStringLiteral("BY704")||
        compact==QStringLiteral("BY04UV"))return QStringLiteral("BY04");
     if(compact==QStringLiteral("ASRTU1"))return QStringLiteral("ASRTU-1");
+    if(compact==QStringLiteral("JAMX"))return QStringLiteral("JAMX");
     if(compact==QStringLiteral("AUTO"))return QStringLiteral("AUTO");
     return trimmed;
 }

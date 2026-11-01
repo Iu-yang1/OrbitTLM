@@ -1286,6 +1286,12 @@ void MainWindow::buildImages(QTabWidget *tabs){
     imageInfo_=subtitle(QStringLiteral("SSDV 图片恢复：候选图像数据不等价于 CRC 验证成功"));
     layout->addWidget(imageInfo_);
     auto *row=new QHBoxLayout;
+    row->addWidget(new QLabel(uiText(QStringLiteral("SSDV 图像归属"))));
+    imageSatelliteSelect_=new QComboBox;
+    imageSatelliteSelect_->addItem(uiText(QStringLiteral("自动 CRC 识别")),QStringLiteral("AUTO"));
+    imageSatelliteSelect_->addItem(uiText(QStringLiteral("手动标记 JAMX（不跳过 CRC）")),QStringLiteral("JAMX"));
+    imageSatelliteSelect_->setToolTip(uiText(QStringLiteral("仅修改 SSDV 图像的卫星归属标签；不会绕过 CRC 校验或强行解码损坏分片。")));
+    row->addWidget(imageSatelliteSelect_);
     row->addWidget(new QLabel(QStringLiteral("图像业务 APID（BY04 固定 VC1）")));
     imageApid_=new QSpinBox;
     imageApid_->setRange(0,2047);imageApid_->setValue(240);

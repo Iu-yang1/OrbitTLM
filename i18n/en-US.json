@@ -912,7 +912,6 @@
     "UV基带遥测发送标志": "UV Baseband Telemetry Transmit Flag",
     "UV接收计数": "UV Receive Count",
     "Unix时间戳": "Unix Timestamp",
-    "VC1 218 字节 SSDV（ASRTU-1 / BY04 兼容格式）": "VC1 218-byte SSDV (ASRTU-1 / BY04 compatible format)",
     "VC1 FIFO缓存百分比": "VC1 FIFO Buffer Percent",
     "VC2 FIFO缓存百分比": "VC2 FIFO Buffer Percent",
     "W1H桥电流": "W1H Bridge Current",
@@ -4391,7 +4390,12 @@
     "高清相机遥测计数": "HD Camera Telemetry Count",
     "（候选未验证）": " (candidate; unverified)",
     "（单位未提供）": "(unit not provided)",
-    "：未解析": ": Not parsed"
+    "：未解析": ": Not parsed",
+    "VC1 218 字节 SSDV（ASRTU-1 / BY04 / JAMX 兼容格式）": "VC1 218-byte SSDV (ASRTU-1 / BY04 / JAMX compatible format)",
+    "SSDV 图像归属": "SSDV image attribution",
+    "自动 CRC 识别": "Automatic CRC detection",
+    "手动标记 JAMX（不跳过 CRC）": "Label as JAMX manually (CRC still required)",
+    "仅修改 SSDV 图像的卫星归属标签；不会绕过 CRC 校验或强行解码损坏分片。": "Changes only the SSDV image attribution label; it does not bypass CRC checks or force damaged fragments to decode."
   },
   "webTranslations": {
     " · 单位 ${usable[0].unit}": " · unit ${usable[0].unit}",

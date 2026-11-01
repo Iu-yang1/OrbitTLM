@@ -8,6 +8,20 @@
 - BY04 VC0/VC2 telemetry continues the KISS byte-stream path. Inner CCSDS Space Packet headers may be recognized when length/format checks pass. APID is an **application process ID**, not a BY04 subsystem engineering telemetry field code.
 - BG7ZDQ explicitly said BY04 and ASRTU-1 have **different spacecraft IDs and engineering field layouts**. Therefore ASRTU-1's published SAT-S3 quaternion offsets are NOT valid for BY04.
 
+## JAMX VC1 SSDV compatibility
+
+JAMX also uses the same 223-byte TM frame / 218-byte compact SSDV payload
+layout and the same `ssdv_dslwp_mode` JPEG reconstruction path. Its image-packet
+CRC32 is a separate variant: initial value `0x6AAAC1C5`, polynomial
+`0xEDB88320`, 214 data bytes, and a 4-byte big-endian trailer. OrbitTLM checks
+the existing DSLWP CRC first, then this JAMX CRC. A passing JAMX CRC marks the
+image as `JAMX`; the CCSDS spacecraft header alone is not used for this decision
+because `0x0322` also occurs in the ASRTU-1 receive stream.
+
+The regression fixture `tests/fixtures/jamx_satnogs_14907288.b64` contains 97
+received VC1 frames from SatNOGS observation 14907288. It has 56 unique JAMX
+SSDV packets and reconstructs image 0 as a 640 × 480 JPEG.
+
 ## Current OrbitTLM decoder
 
 - Parse BY04 223-byte TM information frame, add `tm.spacecraft_id` metadata.
@@ -27,3 +41,15 @@ No verifiable BY04 business field dictionary (engineering voltage, thermal, quat
 - https://github.com/BG7ZDQ/ASRTU_Series_Receiver/blob/main/third_party/ssdv_dslwp/ssdv.c
 - https://community.libre.space/t/cz-6c-launches-jamx01-by70-4-2026-08-25-03-30utc/15173?page=10
 - https://db.satnogs.org/satellite/EMBU-7314-7883-5821-1365/
+
+### Additional JAMX capture CRC profile
+
+The 2026-10-31 user-provided JAMX recording is not validated by either the
+DSLWP seed (`0x4EE4FDE1`) or the publicly documented JAMX seed (`0x6AAAC1C5`).
+The 46 intact packets in that capture validate consistently with
+`0xF87754B4`; four packets fail this CRC and remain marked as damaged. OrbitTLM
+therefore accepts this as an additional *capture-observed compatibility
+profile*. It is deliberately documented separately from the published JAMX
+constant and is not asserted to be the universal JAMX CRC initial value.
+Regression fixtures preserve both the 50 compact packets and the 189 raw TM
+frames supplied with the capture.

@@ -15,11 +15,62 @@ extern "C" {
 }
 namespace orbit {
 namespace {
+// Publicly documented JAMX01 CRC profile (e.g. SatNOGS observation 14907288).
+constexpr std::uint32_t kJamxCrcInitialValue = 0x6AAAC1C5U;
+// A second, independently observed profile in the user's 2026-10-31 JAMX
+// capture: 46 of 50 packets validate with this exact seed. This value is an
+// empirical compatibility profile, not a claim that it is the universal JAMX
+// seed. Keep the published profile above as the primary protocol definition.
+constexpr std::uint32_t kJamxCaptureCrcInitialValue = 0xF87754B4U;
+constexpr int kShortSsdvPayloadSize = 218;
+constexpr int kShortSsdvCrcDataSize = 214;
+
+std::uint32_t ssdvCrc32(const char *data, int length, std::uint32_t initialValue) {
+    std::uint32_t crc = initialValue;
+    for (int offset = 0; offset < length; ++offset) {
+        std::uint32_t value =
+            (crc ^ std::uint8_t(data[offset])) & 0xFFU;
+        for (int bit = 0; bit < 8; ++bit) {
+            value = (value & 1U) != 0U
+                ? (value >> 1U) ^ 0xEDB88320U
+                : value >> 1U;
+        }
+        crc = (crc >> 8U) ^ value;
+    }
+    return crc ^ 0xFFFFFFFFU;
+}
+
+// JAMX uses the 218-byte DSLWP compact SSDV packet layout but a different
+// CRC32 initial value. The trailer is stored in network byte order.
+bool hasJamxCrc(const QByteArray &packet) {
+    if (packet.size() != kShortSsdvPayloadSize)
+        return false;
+
+    const auto *bytes =
+        reinterpret_cast<const std::uint8_t *>(packet.constData());
+    const std::uint32_t expected =
+        (std::uint32_t(bytes[kShortSsdvCrcDataSize]) << 24U) |
+        (std::uint32_t(bytes[kShortSsdvCrcDataSize + 1]) << 16U) |
+        (std::uint32_t(bytes[kShortSsdvCrcDataSize + 2]) << 8U) |
+        std::uint32_t(bytes[kShortSsdvCrcDataSize + 3]);
+    const std::uint32_t published = ssdvCrc32(
+        packet.constData(), kShortSsdvCrcDataSize, kJamxCrcInitialValue);
+    if (published == expected)
+        return true;
+    const std::uint32_t observedCapture = ssdvCrc32(
+        packet.constData(), kShortSsdvCrcDataSize,
+        kJamxCaptureCrcInitialValue);
+    return observedCapture == expected;
+}
+
 // Validate the packet layout before exposing a candidate to the SSDV state machine.
 // CRC failure is allowed for diagnostics, but malformed headers are never accepted.
 bool inspectPacket(const QByteArray &raw, bool shortFormat, ssdv_packet_info_t &info,
-                   QByteArray &corrected, bool &crcPassed, bool allowHeaderOnly=false) {
+                   QByteArray &corrected, bool &crcPassed, bool allowHeaderOnly=false,
+                   bool *jamxCrcPassed=nullptr) {
     const int expected=shortFormat?SSDV_PKT_SIZE_DSLWP:SSDV_PKT_SIZE;
+    if (jamxCrcPassed)
+        *jamxCrcPassed=false;
     if(raw.size()!=expected)return false;
     if(!shortFormat){
         if(quint8(raw[0])!=0x55)return false;
@@ -31,6 +82,16 @@ bool inspectPacket(const QByteArray &raw, bool shortFormat, ssdv_packet_info_t &
     crcPassed=ssdv_dec_is_packet(reinterpret_cast<std::uint8_t*>(corrected.data()),
                                  &correctedSymbols,
                                  shortFormat?ssdv_dslwp_mode:ssdv_normal_mode)==SSDV_OK;
+    bool jamxPassed=false;
+    if (shortFormat && !crcPassed && hasJamxCrc(raw)) {
+        // ssdv_dec_is_packet() tests a private copy, but keep JAMX's original
+        // bytes as the decoder input because its CRC is valid under this mode.
+        corrected=raw;
+        crcPassed=true;
+        jamxPassed=true;
+    }
+    if (jamxCrcPassed)
+        *jamxCrcPassed=jamxPassed;
     const QByteArray &header=crcPassed?corrected:raw;
     if(shortFormat){
         if(header.size()!=SSDV_PKT_SIZE_DSLWP)return false;
@@ -65,7 +126,7 @@ bool crcPass(const ImagePacket &packet) {
            packet.status==QStringLiteral("ssdv_crc_pass");
 }
 
-QString candidateGroupKey(const ImagePacket &packet) {
+QString candidateGroupKey(const ImagePacket &packet, bool includeSatellite=true) {
     // Same numeric image ID may be reused across captures. Keep CRC-failed
     // fragments tied to a complete header signature, not merely the image ID.
     const bool shortFormat=packet.bytes.size()==SSDV_PKT_SIZE_DSLWP;
@@ -76,9 +137,37 @@ QString candidateGroupKey(const ImagePacket &packet) {
     const QString type=shortFormat?QStringLiteral("DSLWP"):QString::number(quint8(packet.bytes[1]));
     const QString callsign=shortFormat?QStringLiteral("DSLWP"):
         QString::fromLatin1(packet.bytes.mid(2,4).toHex());
+    const QString satellite = includeSatellite
+        ? canonicalSatelliteName(packet.satellite) : QString();
     return QStringLiteral("%1|%2|%3|%4x%5|%6|%7|%8")
-        .arg(canonicalSatelliteName(packet.satellite)).arg(packet.bytes.size())
+        .arg(satellite).arg(packet.bytes.size())
         .arg(packet.imageId).arg(packet.width).arg(packet.height).arg(type).arg(flags).arg(callsign);
+}
+
+void propagateJamxIdentity(QVector<ImagePacket> &candidates) {
+    // A damaged JAMX fragment cannot prove its own CRC variant. Once a valid
+    // JAMX fragment establishes the image signature, associate matching
+    // damaged peers with the same JAMX image so the normal corroboration rule
+    // can retain them for diagnostics/recovery.
+    QSet<QString> verifiedJamxGroups;
+    for (const auto &packet : candidates) {
+        if (crcPass(packet) && canonicalSatelliteName(packet.satellite) ==
+                                   QStringLiteral("JAMX")) {
+            verifiedJamxGroups.insert(candidateGroupKey(packet, false));
+        }
+    }
+    if (verifiedJamxGroups.isEmpty())
+        return;
+    for (auto &packet : candidates) {
+        const QString satellite=canonicalSatelliteName(packet.satellite);
+        // A different CRC-valid variant is its own positive identification;
+        // never relabel it merely because another spacecraft reused an image ID.
+        if (crcPass(packet) || satellite == QStringLiteral("JAMX") ||
+            satellite == QStringLiteral("BY04"))
+            continue;
+        if (verifiedJamxGroups.contains(candidateGroupKey(packet, false)))
+            packet.satellite = QStringLiteral("JAMX");
+    }
 }
 
 QVector<ImagePacket> keepCorroboratedCandidates(const QVector<ImagePacket> &candidates) {
@@ -110,21 +199,23 @@ QVector<ImagePacket> ImageTools::candidatesFromFrames(const QVector<Frame> &fram
     QSet<QByteArray> seen;
     for(const Frame &frame:frames){
         // Only VC1's exact 223-byte TM information frames carry the compact
-        // DSLWP packet format. CRC-failing candidates are retained only when a
-        // CRC-valid packet corroborates the same image metadata.
+        // 218-byte SSDV format. This is shared by DSLWP/BY04/ASRTU-1 and JAMX;
+        // JAMX is distinguished by its alternate CRC32 initial value.
         if(frame.bytes.size()!=223||frame.vcid!=1)continue;
         const QByteArray payload=frame.bytes.mid(5,218);
         if(seen.contains(payload))continue;
         QByteArray corrected;
         bool passed=false;
+        bool jamxPassed=false;
         ssdv_packet_info_t info{};
-        if(!inspectPacket(payload,true,info,corrected,passed))continue;
+        if(!inspectPacket(payload,true,info,corrected,passed,false,&jamxPassed))continue;
         seen.insert(payload);
         ImagePacket packet;
         packet.bytes=passed?corrected:payload;
         packet.apid=-1;packet.imageId=info.image_id;packet.packetId=info.packet_id;
         packet.width=info.width;packet.height=info.height;
-        packet.satellite=canonicalSatelliteName(frame.satellite);
+        packet.satellite=jamxPassed?QStringLiteral("JAMX"):
+                                    canonicalSatelliteName(frame.satellite);
         packet.captureLocal=frame.captureLocal;packet.sources=frame.sources;
         packet.fecEvidence=frame.quality;packet.vcid=frame.vcid;
         packet.firstMaster=frame.master;packet.lastMaster=frame.master;
@@ -132,6 +223,7 @@ QVector<ImagePacket> ImageTools::candidatesFromFrames(const QVector<Frame> &fram
                              QStringLiteral("ssdv_crc32_failed");
         provisional.push_back(packet);
     }
+    propagateJamxIdentity(provisional);
     auto out=keepCorroboratedCandidates(provisional);
     std::stable_sort(out.begin(),out.end(),[](const ImagePacket &a,const ImagePacket &b){
         if(a.satellite!=b.satellite)return a.satellite<b.satellite;
@@ -208,12 +300,14 @@ QVector<ImagePacket> ImageTools::parseBinaryPackets(
     if(packets218){
         for(int offset=0;offset+SSDV_PKT_SIZE_DSLWP<=data.size();offset+=SSDV_PKT_SIZE_DSLWP){
             const QByteArray bytes=data.mid(offset,SSDV_PKT_SIZE_DSLWP);
-            QByteArray corrected;bool passed=false;ssdv_packet_info_t info{};
-            if(!inspectPacket(bytes,true,info,corrected,passed))continue;
+            QByteArray corrected;bool passed=false;bool jamxPassed=false;
+            ssdv_packet_info_t info{};
+            if(!inspectPacket(bytes,true,info,corrected,passed,false,&jamxPassed))continue;
             ImagePacket packet;
             packet.bytes=passed?corrected:bytes;packet.apid=apid;
             packet.imageId=info.image_id;packet.packetId=info.packet_id;
             packet.width=info.width;packet.height=info.height;
+            if(jamxPassed)packet.satellite=QStringLiteral("JAMX");
             packet.status=passed?QStringLiteral("ssdv_crc32_pass"):
                                  QStringLiteral("ssdv_crc32_failed");
             provisional.push_back(packet);
@@ -236,6 +330,7 @@ QVector<ImagePacket> ImageTools::parseBinaryPackets(
             "BIN 长度不符合已支持的分片格式（218 字节 SSDV 分片或 256 字节标准 SSDV 包）。");
         return provisional;
     }
+    propagateJamxIdentity(provisional);
     auto out=keepCorroboratedCandidates(provisional);
     if(out.isEmpty()&&error)*error=QStringLiteral(
         "文件中没有可验证或被有效分片佐证的 SSDV 数据；请确认导入的是图像 BIN，而不是遥测原始帧。");

@@ -12,7 +12,7 @@
 | Qt replay and SQLite | implemented | CI compilation and SQL tests; manual GUI validation remains |
 | Quaternion series | SAT-S3 signed-int32 q0..q3 /10000 exported; experimental candidate kept separate | application CRC and physical attitude coordinate convention unverified |
 | BY04/8104 | framework and optional schema supported | mission-specific field validation pending |
-| SSDV | embedded JPEG reconstruction with missing-MCU fill; CRC-failed packets retained for diagnostics | a partial preview is best-effort and does not make damaged packets CRC-valid |
+| SSDV | embedded JPEG reconstruction with missing-MCU fill; 218-byte DSLWP and JAMX CRC variants accepted | BY04/ASRTU-1 and JAMX regression fixtures; a partial preview is best-effort and does not make damaged packets CRC-valid |
 | TCP live receive | basic 223-byte record stream | field hardware tests pending |
 
 ## Flight encoding, as described by developer BG7ZDQ
@@ -76,3 +76,5 @@ OrbitTLM-cli --satellite ASRTU-1 --log decoder.log --bin SSDV_received_frames223
 - Dedicated tests exercise the SAT-S3 signed quaternion field scaling, ZGK-S0 affine conversion, PDB status bits, the native two-byte subtype header and the legacy seven-byte KISS envelope.
 - Unsupported/ambiguous source formulas are reported explicitly; malformed bit positions remain visible as invalid instead of being silently repaired.
 - These are schema/synthetic regressions. An on-air engineering-field verification still requires actual matching KISS packets and known-good reference values. Packets from unrelated APIDs or subtypes are correctly retained as unknown rather than force-decoded.
+
+- JAMX regression covers the public SatNOGS 14907288 sample and the supplied 2026-10-31 capture. The latter must yield 50 structurally consistent packets, 46 packets passing the capture-observed CRC profile, four flagged CRC failures, and a decodable partial 640×480 JPEG.
